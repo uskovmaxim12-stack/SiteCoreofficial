@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="database.js"></script>
     <style>
-        /* Сброс и базовые стили */
         * {
             margin: 0;
             padding: 0;
@@ -51,23 +50,23 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            color: var(--gray-800);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--gray-100);
             min-height: 100vh;
         }
 
         /* Шапка */
         .header {
-            background: var(--white);
-            box-shadow: var(--shadow-md);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid var(--gray-200);
         }
 
         .header-container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 1rem 2rem;
             display: flex;
@@ -103,12 +102,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .logo-subtext {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            margin-left: 0.5rem;
-        }
-
         .user-menu {
             display: flex;
             align-items: center;
@@ -120,22 +113,21 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.5rem 1rem;
-            background: var(--gray-50);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition);
         }
 
         .user-info:hover {
-            background: var(--gray-100);
+            background: rgba(255, 255, 255, 0.1);
             transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
         }
 
         .user-avatar {
             width: 2.5rem;
             height: 2.5rem;
-            background: var(--gradient-secondary);
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -153,20 +145,20 @@
         .user-name {
             font-weight: 600;
             font-size: 0.875rem;
-            color: var(--gray-800);
+            color: var(--white);
         }
 
         .user-role {
             font-size: 0.75rem;
-            color: var(--gray-500);
+            color: var(--gray-400);
         }
 
         .logout-btn {
             padding: 0.75rem 1.5rem;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-300);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: var(--radius-md);
-            color: var(--gray-700);
+            color: #fecaca;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -176,129 +168,92 @@
         }
 
         .logout-btn:hover {
-            background: var(--gray-100);
-            color: var(--danger);
-            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.2);
             transform: translateY(-1px);
         }
 
         /* Основной контент */
         .main-container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
-        }
-
-        /* Статистика вверху */
-        .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
         }
 
-        .stat-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
+        /* Боковая панель */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            height: fit-content;
+            position: sticky;
+            top: 6rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar-header {
             padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
             display: flex;
             align-items: center;
             gap: 1rem;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gradient-primary);
-        }
-
-        .stat-icon {
-            width: 3rem;
-            height: 3rem;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .stat-content {
-            flex: 1;
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-            color: var(--gray-800);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--gray-500);
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--gray-400);
             font-weight: 500;
-        }
-
-        /* Вкладки */
-        .tabs-container {
-            background: var(--white);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-200);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .tabs-header {
-            display: flex;
-            background: var(--gray-50);
-            border-bottom: 1px solid var(--gray-200);
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            padding: 1.25rem 2rem;
-            background: transparent;
-            border: none;
-            color: var(--gray-600);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
             transition: var(--transition);
+            border-left: 4px solid transparent;
             position: relative;
-            white-space: nowrap;
-            border-bottom: 3px solid transparent;
         }
 
-        .tab-btn:hover {
-            color: var(--primary);
-            background: var(--gray-100);
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            padding-left: 2rem;
         }
 
-        .tab-btn.active {
-            color: var(--primary);
-            background: var(--white);
-            border-bottom-color: var(--primary);
+        .nav-item.active {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary-light);
+            border-left-color: var(--primary);
+            font-weight: 600;
         }
 
-        .tab-badge {
-            margin-left: 0.5rem;
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
             background: var(--primary);
             color: white;
             font-size: 0.75rem;
@@ -309,67 +264,106 @@
             text-align: center;
         }
 
-        /* Контент вкладок */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease-out;
+        /* Контент */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .tab-content.active {
-            display: block;
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Сетка заказов */
+        .stat-card:hover {
+            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(67, 97, 238, 0.2);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.25rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+        }
+
+        /* Заказы */
         .orders-container {
-            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .section-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--gray-800);
+            color: white;
         }
 
         .section-subtitle {
-            color: var(--gray-500);
-            font-size: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-400);
         }
 
         .filters {
             display: flex;
             gap: 1rem;
-            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .filter-select {
             padding: 0.75rem 1rem;
-            border: 2px solid var(--gray-300);
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-md);
-            background: var(--white);
-            color: var(--gray-700);
+            color: white;
             font-size: 0.875rem;
-            font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
-            min-width: 150px;
         }
 
         .filter-select:focus {
@@ -377,47 +371,18 @@
             border-color: var(--primary);
         }
 
-        .search-box {
-            position: relative;
-            min-width: 300px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-500);
-        }
-
         .orders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
         }
 
-        /* Карточка заказа */
         .order-card {
-            background: var(--white);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
             padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition);
             cursor: pointer;
             position: relative;
@@ -425,27 +390,20 @@
         }
 
         .order-card:hover {
+            background: rgba(15, 23, 42, 0.8);
             transform: translateY(-4px);
+            border-color: rgba(67, 97, 238, 0.3);
             box-shadow: var(--shadow-xl);
-            border-color: var(--primary-light);
         }
 
-        .order-card.assigned {
-            border-left: 4px solid var(--primary);
-        }
-
-        .order-card.assigned::before {
-            content: 'Ваш заказ';
+        .order-card::before {
+            content: '';
             position: absolute;
-            top: 1rem;
-            right: -2rem;
-            background: var(--primary);
-            color: white;
-            padding: 0.25rem 2rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transform: rotate(45deg);
-            transform-origin: center;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
         }
 
         .order-header {
@@ -456,18 +414,15 @@
         }
 
         .order-title {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 700;
-            color: var(--gray-800);
+            color: white;
             margin-bottom: 0.25rem;
         }
 
         .order-client {
             font-size: 0.875rem;
-            color: var(--gray-500);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            color: var(--gray-400);
         }
 
         .order-status {
@@ -480,18 +435,10 @@
             gap: 0.5rem;
         }
 
-        .status-new { background: #dbeafe; color: #1d4ed8; }
-        .status-progress { background: #fef3c7; color: #d97706; }
-        .status-review { background: #fce7f3; color: #be185d; }
-        .status-completed { background: #dcfce7; color: #16a34a; }
-
-        .order-status::before {
-            content: '';
-            width: 0.5rem;
-            height: 0.5rem;
-            border-radius: 50%;
-            background: currentColor;
-        }
+        .status-new { background: rgba(29, 78, 216, 0.2); color: #93c5fd; border: 1px solid rgba(29, 78, 216, 0.3); }
+        .status-progress { background: rgba(217, 119, 6, 0.2); color: #fcd34d; border: 1px solid rgba(217, 119, 6, 0.3); }
+        .status-review { background: rgba(190, 24, 93, 0.2); color: #f9a8d4; border: 1px solid rgba(190, 24, 93, 0.3); }
+        .status-completed { background: rgba(22, 163, 74, 0.2); color: #86efac; border: 1px solid rgba(22, 163, 74, 0.3); }
 
         .order-details {
             display: grid;
@@ -499,7 +446,7 @@
             gap: 1rem;
             margin-bottom: 1.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .order-detail {
@@ -515,17 +462,17 @@
         }
 
         .detail-value {
-            font-size: 1rem;
+            font-size: 0.875rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: white;
         }
 
-        .order-preview {
-            background: var(--gray-50);
+        .order-prompt {
+            background: rgba(30, 41, 59, 0.8);
             padding: 1rem;
             border-radius: var(--radius-md);
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--gray-300);
             line-height: 1.5;
             margin-bottom: 1.5rem;
             max-height: 100px;
@@ -533,14 +480,14 @@
             position: relative;
         }
 
-        .order-preview::after {
+        .order-prompt::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 2rem;
-            background: linear-gradient(to bottom, transparent, var(--gray-50));
+            background: linear-gradient(to bottom, transparent, rgba(30, 41, 59, 0.8));
         }
 
         .order-actions {
@@ -572,256 +519,223 @@
         }
 
         .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-300);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-secondary:hover {
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            background: rgba(239, 68, 68, 0.1);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
         }
 
         /* Модальное окно */
-        .modal-overlay {
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            animation: fadeIn 0.3s ease-out;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
         }
 
-        .modal-overlay.active {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
             display: flex;
         }
 
-        .modal {
-            background: var(--white);
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%;
-            max-width: 1000px;
+            max-width: 800px;
             max-height: 90vh;
-            overflow: hidden;
+            overflow-y: auto;
             box-shadow: var(--shadow-2xl);
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .modal-header {
-            padding: 2rem 2rem 1rem;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 1;
         }
 
         .modal-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--gray-800);
+            color: white;
         }
 
         .modal-close {
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            font-size: 1.5rem;
-            color: var(--gray-500);
-            cursor: pointer;
             width: 2.5rem;
             height: 2.5rem;
+            border-radius: 50%;
+            color: var(--gray-400);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-md);
             transition: var(--transition);
         }
 
         .modal-close:hover {
-            background: var(--gray-100);
-            color: var(--gray-700);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
 
         .modal-body {
             padding: 2rem;
-            overflow-y: auto;
-            max-height: calc(90vh - 120px);
         }
 
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .modal-section {
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--gray-800);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .info-grid {
+        .order-info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .info-item {
-            background: var(--gray-50);
+            background: rgba(30, 41, 59, 0.8);
             padding: 1rem;
             border-radius: var(--radius-md);
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .info-label {
             font-size: 0.75rem;
-            color: var(--gray-500);
+            color: var(--gray-400);
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            display: block;
         }
 
         .info-value {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: white;
+        }
+
+        .prompt-container {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .prompt-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
         }
 
         .prompt-content {
-            background: var(--gray-50);
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--gray-200);
-            white-space: pre-wrap;
+            color: var(--gray-300);
             line-height: 1.6;
-            max-height: 300px;
+            white-space: pre-wrap;
+            max-height: 200px;
             overflow-y: auto;
-        }
-
-        /* Управление статусом */
-        .status-control {
-            background: var(--gray-50);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            border: 1px solid var(--gray-200);
-            margin-bottom: 2rem;
-        }
-
-        .status-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .status-option {
             padding: 1rem;
-            background: var(--white);
-            border: 2px solid var(--gray-300);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: var(--radius-md);
-            text-align: center;
+        }
+
+        .status-control {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-btn {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--gray-300);
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .status-option:hover {
+        .status-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-btn.active {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--primary-light);
             border-color: var(--primary);
-            transform: translateY(-2px);
         }
 
-        .status-option.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Чат */
         .chat-container {
-            background: var(--white);
+            background: rgba(30, 41, 59, 0.8);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
             margin-bottom: 2rem;
         }
 
         .chat-header {
-            background: var(--gray-50);
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .chat-avatar {
-            width: 3rem;
-            height: 3rem;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .chat-title {
+            font-size: 1rem;
+            font-weight: 600;
             color: white;
-            font-weight: bold;
-            font-size: 1.25rem;
-        }
-
-        .chat-info h4 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: var(--gray-800);
-        }
-
-        .chat-info p {
-            font-size: 0.875rem;
-            color: var(--gray-500);
         }
 
         .chat-messages {
@@ -834,11 +748,11 @@
         }
 
         .message {
-            max-width: 70%;
+            max-width: 80%;
             padding: 1rem;
             border-radius: 1rem;
             position: relative;
-            animation: slideIn 0.3s ease-out;
+            animation: slideIn 0.3s ease;
         }
 
         @keyframes slideIn {
@@ -852,13 +766,6 @@
             }
         }
 
-        .message.client {
-            align-self: flex-start;
-            background: var(--gray-100);
-            color: var(--gray-800);
-            border-bottom-left-radius: 0.25rem;
-        }
-
         .message.developer {
             align-self: flex-end;
             background: var(--gradient-primary);
@@ -866,51 +773,56 @@
             border-bottom-right-radius: 0.25rem;
         }
 
+        .message.client {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+        }
+
         .message.system {
             align-self: center;
-            background: var(--gray-200);
-            color: var(--gray-600);
-            padding: 0.75rem 1rem;
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
             border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
             font-size: 0.875rem;
             text-align: center;
         }
 
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
         .message-sender {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 600;
+            margin-bottom: 0.25rem;
+            opacity: 0.9;
         }
 
         .message-time {
             font-size: 0.75rem;
-            opacity: 0.8;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 0.5rem;
         }
 
         .chat-input-container {
-            padding: 1.5rem;
-            border-top: 1px solid var(--gray-200);
-            background: var(--white);
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .chat-input {
             flex: 1;
-            padding: 1rem;
-            border: 2px solid var(--gray-300);
+            padding: 0.75rem 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-md);
-            font-size: 1rem;
-            transition: var(--transition);
+            color: white;
+            font-size: 0.875rem;
             resize: none;
             min-height: 60px;
-            font-family: inherit;
+            max-height: 120px;
         }
 
         .chat-input:focus {
@@ -965,40 +877,40 @@
         /* Пустые состояния */
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3rem 1rem;
             color: var(--gray-500);
-            grid-column: 1 / -1;
         }
 
         .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
+            font-size: 3rem;
+            margin-bottom: 1rem;
             opacity: 0.5;
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            color: var(--gray-300);
         }
 
         .empty-state p {
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            max-width: 400px;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            max-width: 300px;
             margin-left: auto;
             margin-right: auto;
         }
 
         /* Адаптивность */
         @media (max-width: 1200px) {
-            .modal-grid {
+            .main-container {
                 grid-template-columns: 1fr;
             }
             
-            .orders-grid {
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            .sidebar {
+                position: static;
+                margin-bottom: 1rem;
             }
         }
 
@@ -1013,61 +925,28 @@
                 padding: 1rem;
             }
             
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tabs-header {
-                flex-wrap: wrap;
-            }
-            
-            .tab-btn {
-                flex: 1;
-                min-width: 120px;
-                padding: 1rem;
-                font-size: 0.875rem;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .filters {
-                width: 100%;
-                flex-direction: column;
-            }
-            
-            .search-box {
-                min-width: 100%;
-            }
-            
             .orders-grid {
                 grid-template-columns: 1fr;
             }
             
-            .modal-overlay {
-                padding: 1rem;
+            .filters {
+                flex-direction: column;
             }
             
-            .modal-header,
-            .modal-body {
-                padding: 1.5rem;
+            .modal-content {
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+            
+            .order-info-grid {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 480px) {
-            .stats-container {
+            .stats-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .user-info {
-                padding: 0.5rem;
-            }
-            
-            .user-details {
-                display: none;
             }
             
             .order-actions {
@@ -1079,16 +958,17 @@
                 justify-content: center;
             }
             
-            .chat-input-container {
+            .status-buttons {
                 flex-direction: column;
             }
             
-            .info-grid {
-                grid-template-columns: 1fr;
+            .status-btn {
+                width: 100%;
+                justify-content: center;
             }
             
-            .status-options {
-                grid-template-columns: 1fr;
+            .chat-input-container {
+                flex-direction: column;
             }
         }
     </style>
@@ -1097,22 +977,19 @@
     <!-- Шапка -->
     <div class="header">
         <div class="header-container">
-            <a href="#" class="logo" onclick="showTab('available')">
+            <a href="#" class="logo" onclick="showSection('dashboard')">
                 <div class="logo-icon">
                     <i class="fas fa-code"></i>
                 </div>
-                <div>
-                    <div class="logo-text">SiteCore</div>
-                    <span class="logo-subtext">Панель разработчика</span>
-                </div>
+                <div class="logo-text">SiteCore Dev</div>
             </a>
             
             <div class="user-menu">
                 <div class="user-info" id="userInfo">
-                    <div class="user-avatar" id="userAvatar">Р</div>
+                    <div class="user-avatar" id="userAvatar">Д</div>
                     <div class="user-details">
                         <div class="user-name" id="userName">Разработчик</div>
-                        <div class="user-role">SiteCore Team</div>
+                        <div class="user-role">Панель управления</div>
                     </div>
                 </div>
                 <button class="logout-btn" onclick="logout()">
@@ -1124,155 +1001,138 @@
 
     <!-- Основной контент -->
     <div class="main-container">
-        <!-- Статистика -->
-        <div class="stats-container" id="statsContainer">
-            <!-- Статистика загрузится через JS -->
+        <!-- Боковая панель -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Панель управления
+                </h3>
+                <p class="sidebar-subtitle">Управление заказами и клиентами</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt nav-icon"></i>
+                    Статистика
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('available')">
+                    <i class="fas fa-list-alt nav-icon"></i>
+                    Доступные заказы
+                    <span class="nav-badge" id="availableCount">0</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('my')">
+                    <i class="fas fa-briefcase nav-icon"></i>
+                    Мои заказы
+                    <span class="nav-badge" id="myCount">0</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('clients')">
+                    <i class="fas fa-users nav-icon"></i>
+                    Клиенты
+                </a>
+            </nav>
         </div>
 
-        <!-- Вкладки -->
-        <div class="tabs-container">
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="showTab('available')">
-                    <i class="fas fa-list-alt"></i> Доступные заказы
-                    <span class="tab-badge" id="availableCount">0</span>
-                </button>
-                <button class="tab-btn" onclick="showTab('my')">
-                    <i class="fas fa-briefcase"></i> Мои заказы
-                    <span class="tab-badge" id="myCount">0</span>
-                </button>
-                <button class="tab-btn" onclick="showTab('in-progress')">
-                    <i class="fas fa-spinner"></i> В работе
-                    <span class="tab-badge" id="progressCount">0</span>
-                </button>
-                <button class="tab-btn" onclick="showTab('completed')">
-                    <i class="fas fa-check-circle"></i> Завершенные
-                    <span class="tab-badge" id="completedCount">0</span>
-                </button>
+        <!-- Контент -->
+        <div class="content">
+            <!-- Статистика -->
+            <div id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title" id="dashboardTitle">Статистика</h2>
+                        <p class="section-subtitle">Обзор вашей работы и заказов</p>
+                    </div>
+                </div>
+                
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Статистика загрузится через JS -->
+                </div>
             </div>
 
             <!-- Доступные заказы -->
-            <div id="available-tab" class="tab-content active">
-                <div class="orders-container">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">Доступные заказы</h2>
-                            <p class="section-subtitle">Заказы, ожидающие назначения разработчика</p>
-                        </div>
-                        <div class="filters">
-                            <select class="filter-select" id="filterType" onchange="filterOrders()">
-                                <option value="all">Все типы</option>
-                                <option value="static">Статические</option>
-                                <option value="dynamic">Динамические</option>
-                            </select>
-                            <select class="filter-select" id="filterBudget" onchange="filterOrders()">
-                                <option value="all">Любой бюджет</option>
-                                <option value="low">До 50 000 ₽</option>
-                                <option value="medium">50-100 тыс ₽</option>
-                                <option value="high">От 100 000 ₽</option>
-                            </select>
-                            <div class="search-box">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" class="search-input" id="searchOrders" 
-                                       placeholder="Поиск по названию или клиенту..." 
-                                       oninput="filterOrders()">
-                            </div>
-                        </div>
+            <div id="available-section" class="content-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Доступные заказы</h2>
+                        <p class="section-subtitle">Заказы, ожидающие взятия в работу</p>
                     </div>
-                    
-                    <div class="orders-grid" id="availableOrdersGrid">
+                    <div class="filters">
+                        <select class="filter-select" id="typeFilter" onchange="loadAvailableOrders()">
+                            <option value="all">Все типы</option>
+                            <option value="static">Статические</option>
+                            <option value="dynamic">Динамические</option>
+                        </select>
+                        <select class="filter-select" id="budgetFilter" onchange="loadAvailableOrders()">
+                            <option value="all">Любой бюджет</option>
+                            <option value="low">До 50 000 ₽</option>
+                            <option value="medium">50 000 - 150 000 ₽</option>
+                            <option value="high">От 150 000 ₽</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="orders-container">
+                    <div class="orders-grid" id="availableOrders">
                         <!-- Заказы загрузятся через JS -->
                     </div>
                     
                     <div class="empty-state" id="noAvailableOrders" style="display: none;">
                         <i class="fas fa-check-circle"></i>
                         <h3>Нет доступных заказов</h3>
-                        <p>Все заказы взяты в работу</p>
+                        <p>Все заказы взяты в работу. Загляните позже!</p>
                     </div>
                 </div>
             </div>
 
             <!-- Мои заказы -->
-            <div id="my-tab" class="tab-content">
-                <div class="orders-container">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">Мои заказы</h2>
-                            <p class="section-subtitle">Заказы, назначенные на вас</p>
-                        </div>
-                        <div class="filters">
-                            <select class="filter-select" id="filterMyStatus" onchange="filterMyOrders()">
-                                <option value="all">Все статусы</option>
-                                <option value="new">Новые</option>
-                                <option value="progress">В работе</option>
-                                <option value="review">На проверке</option>
-                                <option value="completed">Завершенные</option>
-                            </select>
-                        </div>
+            <div id="my-section" class="content-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Мои заказы</h2>
+                        <p class="section-subtitle">Заказы, которые вы взяли в работу</p>
                     </div>
-                    
-                    <div class="orders-grid" id="myOrdersGrid">
+                    <div class="filters">
+                        <select class="filter-select" id="statusFilter" onchange="loadMyOrders()">
+                            <option value="all">Все статусы</option>
+                            <option value="new">Новые</option>
+                            <option value="progress">В работе</option>
+                            <option value="review">На проверке</option>
+                            <option value="completed">Завершенные</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="orders-container">
+                    <div class="orders-grid" id="myOrders">
                         <!-- Заказы загрузятся через JS -->
                     </div>
                     
                     <div class="empty-state" id="noMyOrders" style="display: none;">
                         <i class="fas fa-briefcase"></i>
-                        <h3>У вас пока нет заказов</h3>
+                        <h3>У вас нет заказов</h3>
                         <p>Возьмите заказ из доступных</p>
-                        <button class="btn btn-primary" onclick="showTab('available')" style="margin-top: 1.5rem;">
-                            <i class="fas fa-list-alt"></i> Посмотреть доступные
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- В работе -->
-            <div id="in-progress-tab" class="tab-content">
-                <div class="orders-container">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">Заказы в работе</h2>
-                            <p class="section-subtitle">Активные проекты, требующие внимания</p>
-                        </div>
-                    </div>
-                    
-                    <div class="orders-grid" id="progressOrdersGrid">
-                        <!-- Заказы загрузятся через JS -->
-                    </div>
-                    
-                    <div class="empty-state" id="noProgressOrders" style="display: none;">
-                        <i class="fas fa-spinner"></i>
-                        <h3>Нет заказов в работе</h3>
-                        <p>Возьмите заказ в работу или обновите статусы</p>
+            <!-- Клиенты -->
+            <div id="clients-section" class="content-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Мои клиенты</h2>
+                        <p class="section-subtitle">Клиенты, с которыми вы работаете</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Завершенные -->
-            <div id="completed-tab" class="tab-content">
+                
                 <div class="orders-container">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">Завершенные заказы</h2>
-                            <p class="section-subtitle">Успешно выполненные проекты</p>
-                        </div>
-                        <div class="filters">
-                            <select class="filter-select" id="filterCompleted" onchange="filterCompletedOrders()">
-                                <option value="all">Все завершенные</option>
-                                <option value="week">За неделю</option>
-                                <option value="month">За месяц</option>
-                                <option value="year">За год</option>
-                            </select>
-                        </div>
+                    <div class="orders-grid" id="clientsList">
+                        <!-- Клиенты загрузятся через JS -->
                     </div>
                     
-                    <div class="orders-grid" id="completedOrdersGrid">
-                        <!-- Заказы загрузятся через JS -->
-                    </div>
-                    
-                    <div class="empty-state" id="noCompletedOrders" style="display: none;">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Нет завершенных заказов</h3>
-                        <p>Завершите свой первый заказ</p>
+                    <div class="empty-state" id="noClients" style="display: none;">
+                        <i class="fas fa-users"></i>
+                        <h3>Нет клиентов</h3>
+                        <p>У вас пока нет клиентов. Возьмите первый заказ в работу!</p>
                     </div>
                 </div>
             </div>
@@ -1280,8 +1140,8 @@
     </div>
 
     <!-- Модальное окно управления заказом -->
-    <div class="modal-overlay" id="orderModal">
-        <div class="modal">
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">Управление заказом</h2>
                 <button class="modal-close" onclick="closeModal()">
@@ -1289,83 +1149,49 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-grid">
-                    <!-- Левая колонка - информация о заказе -->
-                    <div>
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <i class="fas fa-info-circle"></i> Информация о заказе
-                            </h3>
-                            <div class="info-grid" id="modalOrderInfo">
-                                <!-- Информация загрузится через JS -->
-                            </div>
-                        </div>
-                        
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <i class="fas fa-file-alt"></i> Техническое задание
-                            </h3>
-                            <div class="prompt-content" id="modalPrompt"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Правая колонка - управление и контакты -->
-                    <div>
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <i class="fas fa-cogs"></i> Управление статусом
-                            </h3>
-                            <div class="status-control">
-                                <div class="status-options" id="statusOptions">
-                                    <!-- Статусы загрузятся через JS -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <i class="fas fa-user"></i> Контакты клиента
-                            </h3>
-                            <div class="info-grid" id="modalClientInfo">
-                                <!-- Контакты загрузятся через JS -->
-                            </div>
-                        </div>
-                        
-                        <div class="modal-section">
-                            <button class="btn btn-danger" onclick="rejectOrder()" style="width: 100%;">
-                                <i class="fas fa-times"></i> Отклонить заказ
-                            </button>
-                        </div>
+                <!-- Информация о заказе -->
+                <div class="order-info-grid" id="orderInfo">
+                    <!-- Загрузится через JS -->
+                </div>
+                
+                <!-- Промт -->
+                <div class="prompt-container">
+                    <h3 class="prompt-title">Техническое задание</h3>
+                    <div class="prompt-content" id="orderPrompt"></div>
+                </div>
+                
+                <!-- Управление статусом -->
+                <div class="status-control">
+                    <h3 class="status-title">Изменение статуса</h3>
+                    <div class="status-buttons" id="statusButtons">
+                        <!-- Загрузится через JS -->
                     </div>
                 </div>
                 
                 <!-- Чат -->
-                <div class="modal-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-comments"></i> Общение с клиентом
-                    </h3>
-                    <div class="chat-container">
-                        <div class="chat-header">
-                            <div class="chat-avatar" id="chatClientAvatar">К</div>
-                            <div class="chat-info">
-                                <h4 id="chatClientName">Клиент</h4>
-                                <p id="chatClientEmail">email@example.com</p>
-                            </div>
-                        </div>
-                        
-                        <div class="chat-messages" id="chatMessages">
-                            <!-- Сообщения загрузятся через JS -->
-                        </div>
-                        
-                        <div class="chat-input-container">
-                            <textarea class="chat-input" id="chatInput" 
-                                      placeholder="Введите сообщение..." 
-                                      rows="3"></textarea>
-                            <button class="btn btn-primary" onclick="sendMessage()">
-                                <i class="fas fa-paper-plane"></i> Отправить
-                            </button>
-                        </div>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3 class="chat-title">Общение с клиентом</h3>
                     </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Сообщения загрузятся через JS -->
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..."></textarea>
+                        <button class="btn btn-primary" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i> Отправить
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Действия -->
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button class="btn btn-danger" onclick="rejectOrder()">
+                        <i class="fas fa-times"></i> Отклонить заказ
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Закрыть
+                    </button>
                 </div>
             </div>
         </div>
@@ -1383,12 +1209,11 @@
     <script>
         // Текущий пользователь и состояние
         let currentUser = null;
-        let currentTab = 'available';
-        let currentOrder = null;
-        let filteredOrders = [];
+        let currentOrderId = null;
+        let currentSection = 'dashboard';
         
         // Проверка авторизации
-        function checkAuth() {
+        async function checkAuth() {
             const userData = sessionStorage.getItem('sitecore_user');
             if (!userData || JSON.parse(userData).type !== 'developer') {
                 window.location.href = 'index.html';
@@ -1397,581 +1222,396 @@
             
             currentUser = JSON.parse(userData);
             updateUserInfo();
-            loadStats();
-            loadAvailableOrders();
+            await loadDashboard();
         }
         
-        // Обновление информации пользователя
+        // Обновление информации о пользователе
         function updateUserInfo() {
             document.getElementById('userAvatar').textContent = currentUser.avatar;
             document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('dashboardTitle').textContent = `Добро пожаловать, ${currentUser.name}!`;
+        }
+        
+        // Показать раздел
+        async function showSection(section) {
+            event.preventDefault();
+            currentSection = section;
+            
+            // Обновляем активные элементы навигации
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                const icon = item.querySelector('.nav-icon').className;
+                if (section === 'dashboard' && icon.includes('tachometer-alt')) item.classList.add('active');
+                else if (section === 'available' && icon.includes('list-alt')) item.classList.add('active');
+                else if (section === 'my' && icon.includes('briefcase')) item.classList.add('active');
+                else if (section === 'clients' && icon.includes('users')) item.classList.add('active');
+            });
+            
+            // Показываем нужный раздел
+            document.querySelectorAll('.content-section').forEach(sectionEl => {
+                sectionEl.classList.remove('active');
+            });
+            document.getElementById(section + '-section').classList.add('active');
+            
+            // Загружаем данные
+            if (section === 'dashboard') {
+                await loadDashboard();
+            } else if (section === 'available') {
+                await loadAvailableOrders();
+            } else if (section === 'my') {
+                await loadMyOrders();
+            } else if (section === 'clients') {
+                await loadClients();
+            }
         }
         
         // Загрузка статистики
-        function loadStats() {
-            const orders = window.db.getAllOrders();
-            const myOrders = orders.filter(order => order.assignedTo === currentUser.id);
-            const availableOrders = orders.filter(order => !order.assignedTo && order.status === 'new');
-            const progressOrders = myOrders.filter(order => order.status === 'progress');
-            const completedOrders = myOrders.filter(order => order.status === 'completed');
-            const reviewOrders = myOrders.filter(order => order.status === 'review');
-            
-            // Обновляем бейджи
-            document.getElementById('availableCount').textContent = availableOrders.length;
-            document.getElementById('myCount').textContent = myOrders.length;
-            document.getElementById('progressCount').textContent = progressOrders.length;
-            document.getElementById('completedCount').textContent = completedOrders.length;
-            
-            // Загружаем статистику
-            const totalBudget = myOrders.reduce((sum, order) => sum + order.budget, 0);
-            const avgBudget = myOrders.length > 0 ? Math.round(totalBudget / myOrders.length) : 0;
-            const completionRate = myOrders.length > 0 ? 
-                Math.round((completedOrders.length / myOrders.length) * 100) : 0;
-            
-            document.getElementById('statsContainer').innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-briefcase"></i>
+        async function loadDashboard() {
+            try {
+                const orders = await window.db.getDeveloperOrders(currentUser.id);
+                const availableOrders = orders.filter(order => !order.assignedTo);
+                const myOrders = orders.filter(order => order.assignedTo === currentUser.id);
+                const completedOrders = myOrders.filter(order => order.status === 'completed');
+                const inProgressOrders = myOrders.filter(order => order.status === 'progress');
+                
+                // Обновляем счетчики
+                document.getElementById('availableCount').textContent = availableOrders.length;
+                document.getElementById('myCount').textContent = myOrders.length;
+                
+                // Обновляем статистику
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-list-alt"></i>
+                        </div>
+                        <div class="stat-value">${availableOrders.length}</div>
+                        <div class="stat-label">Доступных заказов</div>
                     </div>
-                    <div class="stat-content">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
                         <div class="stat-value">${myOrders.length}</div>
                         <div class="stat-label">Мои заказы</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-spinner"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value">${progressOrders.length}</div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-value">${inProgressOrders.length}</div>
                         <div class="stat-label">В работе</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-content">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
                         <div class="stat-value">${completedOrders.length}</div>
                         <div class="stat-label">Завершено</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value">${completionRate}%</div>
-                        <div class="stat-label">Успешность</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-ruble-sign"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value">${totalBudget.toLocaleString()} ₽</div>
-                        <div class="stat-label">Общий доход</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value">${avgBudget.toLocaleString()} ₽</div>
-                        <div class="stat-label">Средний заказ</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Показать вкладку
-        function showTab(tabName) {
-            currentTab = tabName;
-            
-            // Обновляем активные вкладки
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            // Показываем нужную вкладку
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            // Загружаем данные
-            switch(tabName) {
-                case 'available':
-                    loadAvailableOrders();
-                    break;
-                case 'my':
-                    loadMyOrders();
-                    break;
-                case 'in-progress':
-                    loadProgressOrders();
-                    break;
-                case 'completed':
-                    loadCompletedOrders();
-                    break;
+                `;
+                
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+                showNotification('Ошибка', 'Не удалось загрузить статистику', 'error');
             }
         }
         
         // Загрузка доступных заказов
-        function loadAvailableOrders() {
+        async function loadAvailableOrders() {
             try {
-                const orders = window.db.getAllOrders();
-                const availableOrders = orders.filter(order => !order.assignedTo && order.status === 'new');
-                filteredOrders = [...availableOrders];
+                const typeFilter = document.getElementById('typeFilter').value;
+                const budgetFilter = document.getElementById('budgetFilter').value;
                 
-                displayAvailableOrders(availableOrders);
+                const orders = await window.db.getDeveloperOrders(currentUser.id);
+                let availableOrders = orders.filter(order => !order.assignedTo && order.status === 'new');
                 
-            } catch (error) {
-                console.error('Ошибка загрузки заказов:', error);
-                showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
-            }
-        }
-        
-        // Отображение доступных заказов
-        function displayAvailableOrders(orders) {
-            const container = document.getElementById('availableOrdersGrid');
-            const emptyState = document.getElementById('noAvailableOrders');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            // Сортируем по дате (новые сначала)
-            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            container.innerHTML = orders.map(order => `
-                <div class="order-card" onclick="openOrderModal('${order.id}')">
-                    <div class="order-header">
-                        <div>
-                            <div class="order-title">${order.projectName}</div>
-                            <div class="order-client">
-                                <i class="fas fa-user"></i> ${order.clientName}
+                // Применяем фильтры
+                if (typeFilter !== 'all') {
+                    availableOrders = availableOrders.filter(order => order.projectType === typeFilter);
+                }
+                
+                if (budgetFilter !== 'all') {
+                    switch(budgetFilter) {
+                        case 'low':
+                            availableOrders = availableOrders.filter(order => order.budget <= 50000);
+                            break;
+                        case 'medium':
+                            availableOrders = availableOrders.filter(order => order.budget > 50000 && order.budget <= 150000);
+                            break;
+                        case 'high':
+                            availableOrders = availableOrders.filter(order => order.budget > 150000);
+                            break;
+                    }
+                }
+                
+                const container = document.getElementById('availableOrders');
+                const emptyState = document.getElementById('noAvailableOrders');
+                
+                if (availableOrders.length === 0) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                // Сортируем по дате (новые сначала)
+                availableOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                container.innerHTML = availableOrders.map(order => {
+                    return `
+                        <div class="order-card" onclick="viewOrder('${order.id}')">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-title">${order.projectName}</div>
+                                    <div class="order-client">${order.clientName}</div>
+                                </div>
+                                <div class="order-status status-new">Новый</div>
+                            </div>
+                            
+                            <div class="order-details">
+                                <div class="order-detail">
+                                    <div class="detail-label">Тип</div>
+                                    <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Бюджет</div>
+                                    <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Срок</div>
+                                    <div class="detail-value">${order.deadline} дней</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Клиент</div>
+                                    <div class="detail-value">${order.clientName}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-prompt">
+                                ${order.prompt.substring(0, 150)}...
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button class="btn btn-primary" onclick="event.stopPropagation(); takeOrder('${order.id}')">
+                                    <i class="fas fa-hand-paper"></i> Взять в работу
+                                </button>
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
+                                    <i class="fas fa-eye"></i> Подробнее
+                                </button>
                             </div>
                         </div>
-                        <div class="order-status status-new">Новый</div>
-                    </div>
-                    
-                    <div class="order-details">
-                        <div class="order-detail">
-                            <div class="detail-label">Тип</div>
-                            <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Бюджет</div>
-                            <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Срок</div>
-                            <div class="detail-value">${order.deadline} дней</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Создан</div>
-                            <div class="detail-value">${new Date(order.createdAt).toLocaleDateString()}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="order-preview">
-                        ${order.prompt.substring(0, 150)}...
-                    </div>
-                    
-                    <div class="order-actions">
-                        <button class="btn btn-success" onclick="event.stopPropagation(); takeOrder('${order.id}')">
-                            <i class="fas fa-hand-paper"></i> Взять в работу
-                        </button>
-                        <button class="btn btn-secondary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
-                            <i class="fas fa-eye"></i> Подробнее
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки доступных заказов:', error);
+                showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
+            }
         }
         
         // Загрузка моих заказов
-        function loadMyOrders() {
+        async function loadMyOrders() {
             try {
-                const orders = window.db.getAllOrders();
-                const myOrders = orders.filter(order => order.assignedTo === currentUser.id);
-                const filterStatus = document.getElementById('filterMyStatus').value;
+                const statusFilter = document.getElementById('statusFilter').value;
                 
-                let filtered = myOrders;
-                if (filterStatus !== 'all') {
-                    filtered = myOrders.filter(order => order.status === filterStatus);
+                const orders = await window.db.getDeveloperOrders(currentUser.id);
+                let myOrders = orders.filter(order => order.assignedTo === currentUser.id);
+                
+                // Применяем фильтр по статусу
+                if (statusFilter !== 'all') {
+                    myOrders = myOrders.filter(order => order.status === statusFilter);
                 }
                 
-                displayMyOrders(filtered);
+                const container = document.getElementById('myOrders');
+                const emptyState = document.getElementById('noMyOrders');
+                
+                if (myOrders.length === 0) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                // Сортируем по статусу и дате
+                myOrders.sort((a, b) => {
+                    const statusOrder = { 'progress': 1, 'review': 2, 'completed': 3, 'new': 4 };
+                    const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+                    if (statusDiff !== 0) return statusDiff;
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
+                });
+                
+                container.innerHTML = myOrders.map(order => {
+                    const statusText = {
+                        'new': 'Новый',
+                        'progress': 'В работе',
+                        'review': 'На проверке',
+                        'completed': 'Завершен'
+                    };
+                    
+                    const statusClass = {
+                        'new': 'status-new',
+                        'progress': 'status-progress',
+                        'review': 'status-review',
+                        'completed': 'status-completed'
+                    };
+                    
+                    return `
+                        <div class="order-card" onclick="openOrderModal('${order.id}')">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-title">${order.projectName}</div>
+                                    <div class="order-client">${order.clientName}</div>
+                                </div>
+                                <div class="order-status ${statusClass[order.status]}">
+                                    ${statusText[order.status]}
+                                </div>
+                            </div>
+                            
+                            <div class="order-details">
+                                <div class="order-detail">
+                                    <div class="detail-label">Тип</div>
+                                    <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Бюджет</div>
+                                    <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Срок</div>
+                                    <div class="detail-value">${order.deadline} дней</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Статус</div>
+                                    <div class="detail-value">${statusText[order.status]}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-prompt">
+                                ${order.prompt.substring(0, 150)}...
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button class="btn btn-primary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
+                                    <i class="fas fa-cog"></i> Управлять
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
                 
             } catch (error) {
                 console.error('Ошибка загрузки моих заказов:', error);
-                showNotification('Ошибка', 'Не удалось загрузить ваши заказы', 'error');
-            }
-        }
-        
-        // Отображение моих заказов
-        function displayMyOrders(orders) {
-            const container = document.getElementById('myOrdersGrid');
-            const emptyState = document.getElementById('noMyOrders');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            // Сортируем по статусу и дате
-            const statusOrder = { 'progress': 1, 'review': 2, 'new': 3, 'completed': 4 };
-            orders.sort((a, b) => {
-                if (statusOrder[a.status] !== statusOrder[b.status]) {
-                    return statusOrder[a.status] - statusOrder[b.status];
-                }
-                return new Date(b.updatedAt) - new Date(a.updatedAt);
-            });
-            
-            container.innerHTML = orders.map(order => {
-                const statusText = {
-                    'new': 'Новый',
-                    'progress': 'В работе',
-                    'review': 'На проверке',
-                    'completed': 'Завершен'
-                };
-                
-                const statusClass = {
-                    'new': 'status-new',
-                    'progress': 'status-progress',
-                    'review': 'status-review',
-                    'completed': 'status-completed'
-                };
-                
-                return `
-                    <div class="order-card assigned" onclick="openOrderModal('${order.id}')">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-title">${order.projectName}</div>
-                                <div class="order-client">
-                                    <i class="fas fa-user"></i> ${order.clientName}
-                                </div>
-                            </div>
-                            <div class="order-status ${statusClass[order.status]}">
-                                ${statusText[order.status]}
-                            </div>
-                        </div>
-                        
-                        <div class="order-details">
-                            <div class="order-detail">
-                                <div class="detail-label">Тип</div>
-                                <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Бюджет</div>
-                                <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Срок</div>
-                                <div class="detail-value">${order.deadline} дней</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Статус</div>
-                                <div class="detail-value">${statusText[order.status]}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-preview">
-                            ${order.prompt.substring(0, 150)}...
-                        </div>
-                        
-                        <div class="order-actions">
-                            <button class="btn btn-primary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
-                                <i class="fas fa-cog"></i> Управлять
-                            </button>
-                            <button class="btn btn-secondary" onclick="event.stopPropagation(); updateOrderStatus('${order.id}', '${order.status === 'progress' ? 'review' : 'completed'}')">
-                                <i class="fas fa-arrow-right"></i> ${order.status === 'progress' ? 'На проверку' : 'Завершить'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // Загрузка заказов в работе
-        function loadProgressOrders() {
-            try {
-                const orders = window.db.getAllOrders();
-                const progressOrders = orders.filter(order => 
-                    order.assignedTo === currentUser.id && order.status === 'progress'
-                );
-                
-                displayProgressOrders(progressOrders);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки заказов в работе:', error);
                 showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
             }
         }
         
-        // Отображение заказов в работе
-        function displayProgressOrders(orders) {
-            const container = document.getElementById('progressOrdersGrid');
-            const emptyState = document.getElementById('noProgressOrders');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            // Сортируем по сроку (срочные первыми)
-            orders.sort((a, b) => {
-                const aDeadline = new Date(a.createdAt);
-                aDeadline.setDate(aDeadline.getDate() + a.deadline);
-                const bDeadline = new Date(b.createdAt);
-                bDeadline.setDate(bDeadline.getDate() + b.deadline);
-                return aDeadline - bDeadline;
-            });
-            
-            container.innerHTML = orders.map(order => {
-                const deadlineDate = new Date(order.createdAt);
-                deadlineDate.setDate(deadlineDate.getDate() + order.deadline);
-                const daysLeft = Math.ceil((deadlineDate - new Date()) / (1000 * 60 * 60 * 24));
-                
-                return `
-                    <div class="order-card assigned" onclick="openOrderModal('${order.id}')">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-title">${order.projectName}</div>
-                                <div class="order-client">
-                                    <i class="fas fa-user"></i> ${order.clientName}
-                                </div>
-                            </div>
-                            <div class="order-status ${daysLeft <= 3 ? 'status-review' : 'status-progress'}">
-                                ${daysLeft <= 3 ? 'Срочно!' : 'В работе'}
-                            </div>
-                        </div>
-                        
-                        <div class="order-details">
-                            <div class="order-detail">
-                                <div class="detail-label">Тип</div>
-                                <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Бюджет</div>
-                                <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Срок</div>
-                                <div class="detail-value">${order.deadline} дней</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Осталось</div>
-                                <div class="detail-value ${daysLeft <= 3 ? 'danger' : ''}">
-                                    ${daysLeft} ${daysLeft === 1 ? 'день' : daysLeft <= 4 ? 'дня' : 'дней'}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-actions">
-                            <button class="btn btn-primary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
-                                <i class="fas fa-cog"></i> Управлять
-                            </button>
-                            <button class="btn btn-success" onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'review')">
-                                <i class="fas fa-check"></i> На проверку
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // Загрузка завершенных заказов
-        function loadCompletedOrders() {
+        // Загрузка клиентов
+        async function loadClients() {
             try {
-                const orders = window.db.getAllOrders();
-                const completedOrders = orders.filter(order => 
-                    order.assignedTo === currentUser.id && order.status === 'completed'
-                );
+                const orders = await window.db.getDeveloperOrders(currentUser.id);
+                const myOrders = orders.filter(order => order.assignedTo === currentUser.id);
                 
-                const filter = document.getElementById('filterCompleted').value;
-                let filtered = completedOrders;
+                // Получаем уникальных клиентов
+                const clientIds = [...new Set(myOrders.map(order => order.clientId))];
                 
-                if (filter !== 'all') {
-                    const now = new Date();
-                    filtered = completedOrders.filter(order => {
-                        const completedDate = new Date(order.updatedAt);
-                        const diffTime = now - completedDate;
-                        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                        
-                        switch(filter) {
-                            case 'week': return diffDays <= 7;
-                            case 'month': return diffDays <= 30;
-                            case 'year': return diffDays <= 365;
-                            default: return true;
-                        }
-                    });
+                // Получаем всех клиентов из базы
+                const db = window.db.getDatabase();
+                const allClients = db.users.clients || [];
+                const myClients = allClients.filter(client => clientIds.includes(client.id));
+                
+                const container = document.getElementById('clientsList');
+                const emptyState = document.getElementById('noClients');
+                
+                if (myClients.length === 0) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
                 }
                 
-                displayCompletedOrders(filtered);
+                emptyState.style.display = 'none';
+                
+                container.innerHTML = myClients.map(client => {
+                    const clientOrders = myOrders.filter(order => order.clientId === client.id);
+                    const completedOrders = clientOrders.filter(order => order.status === 'completed').length;
+                    const totalBudget = clientOrders.reduce((sum, order) => sum + order.budget, 0);
+                    
+                    return `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-title">${client.name}</div>
+                                    <div class="order-client">${client.email}</div>
+                                </div>
+                                <div class="order-status status-progress">
+                                    Клиент
+                                </div>
+                            </div>
+                            
+                            <div class="order-details">
+                                <div class="order-detail">
+                                    <div class="detail-label">Телефон</div>
+                                    <div class="detail-value">${client.phone}</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Telegram</div>
+                                    <div class="detail-value">${client.telegram}</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Заказов</div>
+                                    <div class="detail-value">${clientOrders.length}</div>
+                                </div>
+                                <div class="order-detail">
+                                    <div class="detail-label">Завершено</div>
+                                    <div class="detail-value">${completedOrders}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-prompt" style="font-size: 0.875rem;">
+                                <strong>Email:</strong> ${client.email}<br>
+                                <strong>Бюджет:</strong> ${totalBudget.toLocaleString()} ₽<br>
+                                <strong>Дата регистрации:</strong> ${new Date(client.createdAt).toLocaleDateString()}
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button class="btn btn-secondary" onclick="contactClient('${client.email}')">
+                                    <i class="fas fa-envelope"></i> Написать
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
                 
             } catch (error) {
-                console.error('Ошибка загрузки завершенных заказов:', error);
-                showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
+                console.error('Ошибка загрузки клиентов:', error);
+                showNotification('Ошибка', 'Не удалось загрузить клиентов', 'error');
             }
-        }
-        
-        // Отображение завершенных заказов
-        function displayCompletedOrders(orders) {
-            const container = document.getElementById('completedOrdersGrid');
-            const emptyState = document.getElementById('noCompletedOrders');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            // Сортируем по дате завершения (новые сначала)
-            orders.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-            
-            container.innerHTML = orders.map(order => {
-                const completedDate = new Date(order.updatedAt);
-                const daysAgo = Math.floor((new Date() - completedDate) / (1000 * 60 * 60 * 24));
-                
-                return `
-                    <div class="order-card assigned" onclick="openOrderModal('${order.id}')">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-title">${order.projectName}</div>
-                                <div class="order-client">
-                                    <i class="fas fa-user"></i> ${order.clientName}
-                                </div>
-                            </div>
-                            <div class="order-status status-completed">Завершен</div>
-                        </div>
-                        
-                        <div class="order-details">
-                            <div class="order-detail">
-                                <div class="detail-label">Тип</div>
-                                <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Бюджет</div>
-                                <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Срок</div>
-                                <div class="detail-value">${order.deadline} дней</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Завершен</div>
-                                <div class="detail-value">
-                                    ${daysAgo === 0 ? 'Сегодня' : 
-                                      daysAgo === 1 ? 'Вчера' : 
-                                      `${daysAgo} дней назад`}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-preview">
-                            ${order.prompt.substring(0, 150)}...
-                        </div>
-                        
-                        <div class="order-actions">
-                            <button class="btn btn-secondary" onclick="event.stopPropagation(); openOrderModal('${order.id}')">
-                                <i class="fas fa-eye"></i> Детали
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // Фильтрация доступных заказов
-        function filterOrders() {
-            const typeFilter = document.getElementById('filterType').value;
-            const budgetFilter = document.getElementById('filterBudget').value;
-            const searchQuery = document.getElementById('searchOrders').value.toLowerCase();
-            
-            const orders = window.db.getAllOrders();
-            let filtered = orders.filter(order => !order.assignedTo && order.status === 'new');
-            
-            // Фильтр по типу
-            if (typeFilter !== 'all') {
-                filtered = filtered.filter(order => order.projectType === typeFilter);
-            }
-            
-            // Фильтр по бюджету
-            if (budgetFilter !== 'all') {
-                switch(budgetFilter) {
-                    case 'low':
-                        filtered = filtered.filter(order => order.budget <= 50000);
-                        break;
-                    case 'medium':
-                        filtered = filtered.filter(order => order.budget > 50000 && order.budget <= 100000);
-                        break;
-                    case 'high':
-                        filtered = filtered.filter(order => order.budget > 100000);
-                        break;
-                }
-            }
-            
-            // Поиск
-            if (searchQuery) {
-                filtered = filtered.filter(order => 
-                    order.projectName.toLowerCase().includes(searchQuery) ||
-                    order.clientName.toLowerCase().includes(searchQuery) ||
-                    order.prompt.toLowerCase().includes(searchQuery)
-                );
-            }
-            
-            filteredOrders = filtered;
-            displayAvailableOrders(filtered);
-        }
-        
-        // Фильтрация моих заказов
-        function filterMyOrders() {
-            loadMyOrders();
-        }
-        
-        // Фильтрация завершенных заказов
-        function filterCompletedOrders() {
-            loadCompletedOrders();
         }
         
         // Взять заказ в работу
         async function takeOrder(orderId) {
             try {
-                const success = window.db.updateOrder(orderId, {
+                // Обновляем заказ
+                const success = await window.db.updateOrder(orderId, {
                     assignedTo: currentUser.id,
-                    status: 'progress',
-                    updatedAt: new Date().toISOString()
+                    status: 'progress'
                 });
                 
                 if (success) {
                     // Добавляем системное сообщение
-                    window.db.addMessage({
+                    await window.db.addMessage({
                         orderId: orderId,
                         text: `Заказ взят в работу разработчиком ${currentUser.name}`,
-                        sender: 'system',
-                        senderName: 'Система'
+                        sender: 'system'
                     });
                     
-                    showNotification('Успех', 'Заказ взят в работу!', 'success');
+                    showNotification('Успех', 'Заказ успешно взят в работу!', 'success');
                     
-                    // Обновляем интерфейс
-                    loadStats();
-                    loadAvailableOrders();
-                    loadMyOrders();
-                    loadProgressOrders();
+                    // Обновляем данные
+                    await loadDashboard();
+                    await loadAvailableOrders();
+                    await loadMyOrders();
                 } else {
                     showNotification('Ошибка', 'Не удалось взять заказ в работу', 'error');
                 }
@@ -1983,19 +1623,21 @@
         
         // Открыть модальное окно заказа
         async function openOrderModal(orderId) {
+            currentOrderId = orderId;
+            
             try {
-                const orders = window.db.getAllOrders();
-                currentOrder = orders.find(order => order.id === orderId);
+                const db = window.db.getDatabase();
+                const order = db.orders.find(o => o.id === orderId);
                 
-                if (!currentOrder) {
+                if (!order) {
                     showNotification('Ошибка', 'Заказ не найден', 'error');
                     return;
                 }
                 
                 // Обновляем заголовок
-                document.getElementById('modalTitle').textContent = currentOrder.projectName;
+                document.getElementById('modalTitle').textContent = order.projectName;
                 
-                // Информация о заказе
+                // Обновляем информацию
                 const statusText = {
                     'new': 'Новый',
                     'progress': 'В работе',
@@ -2003,97 +1645,83 @@
                     'completed': 'Завершен'
                 };
                 
-                document.getElementById('modalOrderInfo').innerHTML = `
+                document.getElementById('orderInfo').innerHTML = `
                     <div class="info-item">
-                        <div class="info-label">Клиент</div>
-                        <div class="info-value">${currentOrder.clientName}</div>
+                        <span class="info-label">Клиент</span>
+                        <span class="info-value">${order.clientName}</span>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Тип сайта</div>
-                        <div class="info-value">${currentOrder.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                        <span class="info-label">Email</span>
+                        <span class="info-value">${order.clientEmail}</span>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Бюджет</div>
-                        <div class="info-value">${currentOrder.budget.toLocaleString()} ₽</div>
+                        <span class="info-label">Телефон</span>
+                        <span class="info-value">${order.clientPhone}</span>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Срок</div>
-                        <div class="info-value">${currentOrder.deadline} дней</div>
+                        <span class="info-label">Telegram</span>
+                        <span class="info-value">${order.clientTelegram}</span>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Статус</div>
-                        <div class="info-value">${statusText[currentOrder.status]}</div>
+                        <span class="info-label">Тип сайта</span>
+                        <span class="info-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</span>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Создан</div>
-                        <div class="info-value">${new Date(currentOrder.createdAt).toLocaleDateString()}</div>
+                        <span class="info-label">Бюджет</span>
+                        <span class="info-value">${order.budget.toLocaleString()} ₽</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Срок</span>
+                        <span class="info-value">${order.deadline} дней</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Статус</span>
+                        <span class="info-value">${statusText[order.status]}</span>
                     </div>
                 `;
                 
-                // Техническое задание
-                document.getElementById('modalPrompt').textContent = currentOrder.prompt;
+                // Обновляем промт
+                document.getElementById('orderPrompt').textContent = order.prompt;
                 
-                // Управление статусом
+                // Обновляем кнопки статуса
                 const statuses = [
-                    { id: 'new', name: 'Новый', color: '#1d4ed8' },
-                    { id: 'progress', name: 'В работе', color: '#d97706' },
-                    { id: 'review', name: 'На проверке', color: '#be185d' },
-                    { id: 'completed', name: 'Завершен', color: '#16a34a' }
+                    { id: 'new', name: 'Новый', icon: 'fas fa-circle' },
+                    { id: 'progress', name: 'В работе', icon: 'fas fa-spinner' },
+                    { id: 'review', name: 'На проверке', icon: 'fas fa-check-circle' },
+                    { id: 'completed', name: 'Завершен', icon: 'fas fa-check-double' }
                 ];
                 
-                document.getElementById('statusOptions').innerHTML = statuses.map(status => `
-                    <div class="status-option ${currentOrder.status === status.id ? 'active' : ''}" 
-                         onclick="updateOrderStatus('${orderId}', '${status.id}')"
-                         style="${currentOrder.status === status.id ? `border-color: ${status.color}` : ''}">
-                        ${status.name}
-                    </div>
+                document.getElementById('statusButtons').innerHTML = statuses.map(status => `
+                    <button class="status-btn ${order.status === status.id ? 'active' : ''}" 
+                            onclick="updateOrderStatus('${status.id}')">
+                        <i class="${status.icon}"></i> ${status.name}
+                    </button>
                 `).join('');
                 
-                // Контакты клиента
-                document.getElementById('modalClientInfo').innerHTML = `
-                    <div class="info-item">
-                        <div class="info-label">Email</div>
-                        <div class="info-value">${currentOrder.clientEmail}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Телефон</div>
-                        <div class="info-value">${currentOrder.clientPhone}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Telegram</div>
-                        <div class="info-value">${currentOrder.clientTelegram}</div>
-                    </div>
-                `;
-                
-                // Чат
-                document.getElementById('chatClientAvatar').textContent = currentOrder.clientName.charAt(0);
-                document.getElementById('chatClientName').textContent = currentOrder.clientName;
-                document.getElementById('chatClientEmail').textContent = currentOrder.clientEmail;
-                
-                loadChatMessages(orderId);
+                // Загружаем сообщения
+                await loadChatMessages(orderId);
                 
                 // Показываем модальное окно
                 document.getElementById('orderModal').classList.add('active');
                 
             } catch (error) {
                 console.error('Ошибка открытия заказа:', error);
-                showNotification('Ошибка', 'Не удалось открыть заказ', 'error');
+                showNotification('Ошибка', 'Не удалось загрузить заказ', 'error');
             }
         }
         
         // Закрыть модальное окно
         function closeModal() {
             document.getElementById('orderModal').classList.remove('active');
-            currentOrder = null;
+            currentOrderId = null;
         }
         
         // Обновление статуса заказа
-        async function updateOrderStatus(orderId, status) {
+        async function updateOrderStatus(status) {
+            if (!currentOrderId) return;
+            
             try {
-                const success = window.db.updateOrder(orderId, {
-                    status: status,
-                    updatedAt: new Date().toISOString()
-                });
+                const success = await window.db.updateOrder(currentOrderId, { status: status });
                 
                 if (success) {
                     // Добавляем системное сообщение
@@ -2104,29 +1732,27 @@
                         'completed': 'Завершен'
                     };
                     
-                    window.db.addMessage({
-                        orderId: orderId,
+                    await window.db.addMessage({
+                        orderId: currentOrderId,
                         text: `Статус изменен на "${statusText[status]}"`,
-                        sender: 'system',
-                        senderName: 'Система'
+                        sender: 'system'
                     });
                     
-                    showNotification('Успех', 'Статус заказа обновлен', 'success');
+                    showNotification('Успех', 'Статус обновлен', 'success');
                     
-                    // Обновляем интерфейс
-                    loadStats();
-                    loadAvailableOrders();
-                    loadMyOrders();
-                    loadProgressOrders();
-                    loadCompletedOrders();
+                    // Обновляем UI
+                    document.querySelectorAll('.status-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    event.target.classList.add('active');
                     
-                    // Если мы в модальном окне, обновляем его
-                    if (currentOrder && currentOrder.id === orderId) {
-                        currentOrder.status = status;
-                        openOrderModal(orderId);
-                    }
-                } else {
-                    showNotification('Ошибка', 'Не удалось обновить статус', 'error');
+                    // Обновляем сообщения
+                    await loadChatMessages(currentOrderId);
+                    
+                    // Обновляем списки
+                    await loadDashboard();
+                    await loadAvailableOrders();
+                    await loadMyOrders();
                 }
             } catch (error) {
                 console.error('Ошибка обновления статуса:', error);
@@ -2134,61 +1760,11 @@
             }
         }
         
-        // Отклонить заказ
-        async function rejectOrder() {
-            if (!currentOrder || !confirm('Вы уверены, что хотите отклонить этот заказ?')) {
-                return;
-            }
-            
-            try {
-                const success = window.db.updateOrder(currentOrder.id, {
-                    assignedTo: null,
-                    status: 'new',
-                    updatedAt: new Date().toISOString()
-                });
-                
-                if (success) {
-                    // Добавляем системное сообщение
-                    window.db.addMessage({
-                        orderId: currentOrder.id,
-                        text: `Заказ отклонен разработчиком ${currentUser.name}`,
-                        sender: 'system',
-                        senderName: 'Система'
-                    });
-                    
-                    showNotification('Успех', 'Заказ отклонен', 'success');
-                    
-                    // Закрываем модальное окно
-                    closeModal();
-                    
-                    // Обновляем интерфейс
-                    loadStats();
-                    loadAvailableOrders();
-                    loadMyOrders();
-                    loadProgressOrders();
-                } else {
-                    showNotification('Ошибка', 'Не удалось отклонить заказ', 'error');
-                }
-            } catch (error) {
-                console.error('Ошибка отклонения заказа:', error);
-                showNotification('Ошибка', 'Не удалось отклонить заказ', 'error');
-            }
-        }
-        
-        // Загрузка сообщений чата
+        // Загрузка сообщений
         async function loadChatMessages(orderId) {
             try {
-                const messages = window.db.getOrderMessages(orderId);
+                const messages = await window.db.getOrderMessages(orderId);
                 const container = document.getElementById('chatMessages');
-                
-                if (!messages || messages.length === 0) {
-                    container.innerHTML = `
-                        <div class="message system">
-                            Нет сообщений. Начните общение с клиентом.
-                        </div>
-                    `;
-                    return;
-                }
                 
                 container.innerHTML = messages.map(msg => {
                     if (msg.sender === 'system') {
@@ -2200,21 +1776,17 @@
                     } else if (msg.sender === currentUser.id) {
                         return `
                             <div class="message developer">
-                                <div class="message-header">
-                                    <div class="message-sender">Вы</div>
-                                    <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                                </div>
-                                <div>${msg.text}</div>
+                                <div class="message-sender">Вы</div>
+                                ${msg.text}
+                                <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                             </div>
                         `;
                     } else {
                         return `
                             <div class="message client">
-                                <div class="message-header">
-                                    <div class="message-sender">${msg.senderName || 'Клиент'}</div>
-                                    <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                                </div>
-                                <div>${msg.text}</div>
+                                <div class="message-sender">Клиент</div>
+                                ${msg.text}
+                                <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                             </div>
                         `;
                     }
@@ -2233,24 +1805,62 @@
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             
-            if (!message || !currentOrder) return;
+            if (!message || !currentOrderId) return;
             
             try {
-                // Добавляем сообщение
-                window.db.addMessage({
-                    orderId: currentOrder.id,
+                await window.db.addMessage({
+                    orderId: currentOrderId,
                     text: message,
-                    sender: currentUser.id,
-                    senderName: currentUser.name
+                    sender: currentUser.id
                 });
                 
                 input.value = '';
-                loadChatMessages(currentOrder.id);
+                await loadChatMessages(currentOrderId);
                 
             } catch (error) {
                 console.error('Ошибка отправки сообщения:', error);
                 showNotification('Ошибка', 'Не удалось отправить сообщение', 'error');
             }
+        }
+        
+        // Отклонение заказа
+        async function rejectOrder() {
+            if (!currentOrderId || !confirm('Вы уверены, что хотите отклонить этот заказ?')) return;
+            
+            try {
+                const success = await window.db.updateOrder(currentOrderId, {
+                    assignedTo: null,
+                    status: 'new'
+                });
+                
+                if (success) {
+                    await window.db.addMessage({
+                        orderId: currentOrderId,
+                        text: `Заказ отклонен разработчиком ${currentUser.name}`,
+                        sender: 'system'
+                    });
+                    
+                    showNotification('Успех', 'Заказ отклонен', 'success');
+                    closeModal();
+                    
+                    await loadDashboard();
+                    await loadAvailableOrders();
+                    await loadMyOrders();
+                }
+            } catch (error) {
+                console.error('Ошибка отклонения заказа:', error);
+                showNotification('Ошибка', 'Не удалось отклонить заказ', 'error');
+            }
+        }
+        
+        // Просмотр заказа (открыть модальное окно)
+        function viewOrder(orderId) {
+            openOrderModal(orderId);
+        }
+        
+        // Связаться с клиентом
+        function contactClient(email) {
+            alert(`Контакт клиента: ${email}\n\nВы можете написать клиенту по указанному email или через Telegram, указанный в информации о клиенте.`);
         }
         
         // Показать уведомление
@@ -2277,16 +1887,9 @@
         }
         
         // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            
-            // Настройка обработчиков для чата
-            document.getElementById('chatInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            await loadDashboard();
         });
     </script>
 </body>
