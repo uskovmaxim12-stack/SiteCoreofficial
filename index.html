@@ -1050,6 +1050,18 @@
                 document.getElementById('client-password').value = testPassword;
             }
         });
+        // В конце файла index.html, перед закрывающим 
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Инициализация...');
+    
+    // Ждем инициализации базы данных
+    await window.db.initialize();
+    
+    // Теперь загружаем разработчиков
+    loadDevelopers();
+    
+    console.log('Система готова к работе');
+});
     </script>
 </body>
 </html>
