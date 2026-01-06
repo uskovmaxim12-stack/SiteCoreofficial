@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteCore | Клиент</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        /* Шапка */
+        .header {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout {
+            background: var(--light);
+            color: var(--gray);
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-logout:hover {
+            background: #e5e7eb;
+        }
+
+        /* Основной контент */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Статистика */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Табы */
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Контент табов */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Форма заказа */
+        .create-order {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--gray);
+            border: 2px solid #e5e7eb;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .prompt-counter {
+            text-align: right;
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .prompt-counter.error {
+            color: var(--danger);
+        }
+
+        /* Список заказов */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .order-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .order-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .order-date {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-new { background: #dbeafe; color: #1d4ed8; }
+        .status-in-progress { background: #fef3c7; color: #d97706; }
+        .status-review { background: #fce7f3; color: #be185d; }
+        .status-completed { background: #dcfce7; color: #16a34a; }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item span:first-child {
+            display: block;
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+
+        .detail-item span:last-child {
+            font-weight: 600;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            flex: 1;
+        }
+
+        /* Чат */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-modal.active {
+            display: flex;
+        }
+
+        .chat-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .message.client {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+        }
+
+        .message.developer {
+            align-self: flex-start;
+            background: #e5e7eb;
+            color: var(--dark);
+        }
+
+        .message-system {
+            align-self: center;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 12px;
+            min-height: 50px;
+            max-height: 100px;
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        /* Уведомление */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+        }
+
+        .notification.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--secondary);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .create-order {
+                padding: 20px;
+            }
+            
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-content {
+                max-height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <div class="header">
+        <div class="logo">
+            <h1>SiteCore</h1>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="user-avatar">К</div>
+            <button class="btn btn-logout" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <!-- Статистика -->
+        <div class="stats" id="stats">
+            <!-- Заполнится через JS -->
+        </div>
+
+        <!-- Табы -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('orders')">Мои заказы</button>
+            <button class="tab" onclick="showTab('create')">Новый заказ</button>
+        </div>
+
+        <!-- Мои заказы -->
+        <div id="orders-tab" class="tab-content active">
+            <div class="orders-grid" id="orders-grid">
+                <!-- Заполнится через JS -->
+            </div>
+        </div>
+
+        <!-- Создание заказа -->
+        <div id="create-tab" class="tab-content">
+            <div class="create-order">
+                <div class="form-group">
+                    <label>Название проекта *</label>
+                    <input type="text" id="project-name" placeholder="Например: Интернет-магазин одежды">
+                </div>
+                
+                <div class="form-group">
+                    <label>Тип сайта *</label>
+                    <select id="project-type">
+                        <option value="">-- Выберите --</option>
+                        <option value="static">Статический сайт</option>
+                        <option value="dynamic">Динамический сайт</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Бюджет (₽) *</label>
+                    <input type="number" id="project-budget" placeholder="Например: 50000" min="10000" step="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label>Срок (дней) *</label>
+                    <input type="number" id="project-deadline" placeholder="Например: 30" min="7" max="365">
+                </div>
+                
+                <div class="form-group">
+                    <label>Техническое задание (300-2500 символов) *</label>
+                    <textarea id="project-prompt" placeholder="Опишите подробно, какой сайт вам нужен..."></textarea>
+                    <div class="prompt-counter" id="prompt-counter">0/2500 символов</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="clearForm()">Очистить</button>
+                    <button class="btn-primary" onclick="createOrder()">Создать заказ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Чат -->
+    <div class="chat-modal" id="chat-modal">
+        <div class="chat-content">
+            <div class="chat-header">
+                <h3 id="chat-title">Чат по заказу</h3>
+                <button class="btn-secondary" onclick="closeChat()">Закрыть</button>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Сообщения загружаются через JS -->
+            </div>
+            
+            <div class="chat-input">
+                <textarea id="chat-input-text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter' && !event.shiftKey) {event.preventDefault(); sendMessage();}"></textarea>
+                <button class="btn-primary" onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Конфигурация
+        const GIST_ID = '30dbe17ad2208d9eb8809574ee8ef012';
+        const GIST_URL = `https://gist.githubusercontent.com/uskovmaxim12-stack/${GIST_ID}/raw/sitecore_db.json`;
+        
+        let db = null;
+        let currentUser = null;
+        let currentChatOrder = null;
+
+        // Загрузка базы
+        async function loadDatabase() {
+            try {
+                const response = await fetch(GIST_URL + '?' + Date.now());
+                const text = await response.text();
+                db = JSON.parse(text);
+                localStorage.setItem('sitecore_db', JSON.stringify(db));
+                return true;
+            } catch (error) {
+                const local = localStorage.getItem('sitecore_db');
+                if (local) {
+                    db = JSON.parse(local);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // Сохранение базы
+        async function saveDatabase() {
+            try {
+                localStorage.setItem('sitecore_db', JSON.stringify(db));
+                
+                // Пытаемся сохранить в облако
+                await fetch('https://api.jsonbin.io/v3/b', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': '$2b$10$M8g3O.9wV4KjXp5L6N7Q8eR9sT0uV1wX2yZ3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P'
+                    },
+                    body: JSON.stringify(db)
+                });
+                return true;
+            } catch (error) {
+                console.log('Сохранено локально');
+                return true;
+            }
+        }
+
+        // Инициализация
+        async function init() {
+            // Проверка авторизации
+            const userData = sessionStorage.getItem('currentUser');
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(userData);
+            if (currentUser.type !== 'client') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            await loadDatabase();
+            
+            // Обновляем UI
+            document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            updateStats();
+            loadOrders();
+            
+            // Слушатель для промта
+            document.getElementById('project-prompt').addEventListener('input', updatePromptCounter);
+        }
+
+        // Показать таб
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.getElementById(tab + '-tab').style.display = 'block';
+        }
+
+        // Обновить статистику
+        function updateStats() {
+            const orders = db.orders.filter(o => o.clientId === currentUser.id);
+            const active = orders.filter(o => !['completed', 'cancelled'].includes(o.status)).length;
+            const completed = orders.filter(o => o.status === 'completed').length;
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${orders.length}</div>
+                    <div class="stat-label">Всего заказов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${active}</div>
+                    <div class="stat-label">Активных</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${completed}</div>
+                    <div class="stat-label">Завершено</div>
+                </div>
+            `;
+        }
+
+        // Загрузить заказы
+        function loadOrders() {
+            const orders = db.orders.filter(o => o.clientId === currentUser.id).sort((a,b) => new Date(b.created) - new Date(a.created));
+            const container = document.getElementById('orders-grid');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>У вас пока нет заказов</h3>
+                        <p>Создайте свой первый заказ на разработку сайта</p>
+                        <button class="btn-primary" onclick="showTab('create')" style="margin-top: 15px;">Создать заказ</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = orders.map(order => {
+                const statusText = {
+                    'new': 'Новый',
+                    'in-progress': 'В работе',
+                    'review': 'На проверке',
+                    'completed': 'Завершен',
+                    'cancelled': 'Отменен'
+                }[order.status] || order.status;
+                
+                const statusClass = 'status-' + order.status;
+                
+                // Получаем последнее сообщение
+                const messages = db.messages.filter(m => m.orderId === order.id);
+                const lastMsg = messages[messages.length - 1];
+                let lastMsgText = 'Нет сообщений';
+                if (lastMsg) {
+                    const time = new Date(lastMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    lastMsgText = `${lastMsg.senderName || 'Разработчик'}: ${lastMsg.text.substring(0, 40)}... (${time})`;
+                }
+                
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-title">${order.projectName}</div>
+                                <div class="order-date">${new Date(order.created).toLocaleDateString()}</div>
+                            </div>
+                            <div class="order-status ${statusClass}">${statusText}</div>
+                        </div>
+                        
+                        <div class="order-details">
+                            <div class="detail-item">
+                                <span>Тип</span>
+                                <span>${order.projectType === 'static' ? 'Статический' : 'Динамический'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span>Бюджет</span>
+                                <span>${order.budget.toLocaleString()} ₽</span>
+                            </div>
+                            <div class="detail-item">
+                                <span>Срок</span>
+                                <span>${order.deadline} дн.</span>
+                            </div>
+                            <div class="detail-item">
+                                <span>Разработчик</span>
+                                <span>${order.developerName || 'Не назначен'}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 14px; color: var(--gray); margin: 10px 0;">
+                            <i class="far fa-comment"></i> ${lastMsgText}
+                        </div>
+                        
+                        <div class="order-actions">
+                            <button class="btn-primary btn-small" onclick="openChat('${order.id}')">Чат</button>
+                            ${order.status === 'new' ? `
+                                <button class="btn-secondary btn-small" onclick="cancelOrder('${order.id}')">Отменить</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Создать заказ
+        async function createOrder() {
+            const name = document.getElementById('project-name').value.trim();
+            const type = document.getElementById('project-type').value;
+            const budget = parseInt(document.getElementById('project-budget').value);
+            const deadline = parseInt(document.getElementById('project-deadline').value);
+            const prompt = document.getElementById('project-prompt').value.trim();
+            
+            // Проверки
+            if (!name || !type || !budget || !deadline || !prompt) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+            
+            if (prompt.length < 300) {
+                showNotification('Техническое задание должно быть не менее 300 символов', 'error');
+                return;
+            }
+            
+            if (prompt.length > 2500) {
+                showNotification('Техническое задание должно быть не более 2500 символов', 'error');
+                return;
+            }
+            
+            if (budget < 10000) {
+                showNotification('Бюджет должен быть не менее 10,000 ₽', 'error');
+                return;
+            }
+            
+            // Создаем заказ
+            const order = {
+                id: 'order_' + Date.now(),
+                clientId: currentUser.id,
+                clientName: currentUser.name,
+                clientEmail: currentUser.email,
+                clientPhone: currentUser.phone,
+                clientTelegram: currentUser.telegram,
+                projectName: name,
+                projectType: type,
+                budget: budget,
+                deadline: deadline,
+                prompt: prompt,
+                status: 'new',
+                developerId: null,
+                developerName: null,
+                created: new Date().toISOString()
+            };
+            
+            // Добавляем в базу
+            db.orders.push(order);
+            await saveDatabase();
+            
+            // Системное сообщение
+            const message = {
+                id: 'msg_' + Date.now(),
+                orderId: order.id,
+                text: `Заказ "${name}" создан. Ожидайте, пока разработчик возьмет его в работу.`,
+                sender: 'system',
+                timestamp: new Date().toISOString()
+            };
+            
+            db.messages.push(message);
+            await saveDatabase();
+            
+            // Обновляем UI
+            showNotification('Заказ успешно создан!', 'success');
+            clearForm();
+            showTab('orders');
+            updateStats();
+            loadOrders();
+        }
+
+        // Отменить заказ
+        async function cancelOrder(orderId) {
+            if (!confirm('Вы уверены, что хотите отменить этот заказ?')) return;
+            
+            const order = db.orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'cancelled';
+                
+                // Системное сообщение
+                const message = {
+                    id: 'msg_' + Date.now(),
+                    orderId: orderId,
+                    text: 'Заказ отменен клиентом.',
+                    sender: 'system',
+                    timestamp: new Date().toISOString()
+                };
+                
+                db.messages.push(message);
+                await saveDatabase();
+                
+                showNotification('Заказ отменен', 'success');
+                updateStats();
+                loadOrders();
+            }
+        }
+
+        // Открыть чат
+        function openChat(orderId) {
+            currentChatOrder = orderId;
+            const order = db.orders.find(o => o.id === orderId);
+            
+            if (order) {
+                document.getElementById('chat-title').textContent = `Чат: ${order.projectName}`;
+                document.getElementById('chat-modal').classList.add('active');
+                loadChatMessages();
+            }
+        }
+
+        // Закрыть чат
+        function closeChat() {
+            document.getElementById('chat-modal').classList.remove('active');
+            document.getElementById('chat-input-text').value = '';
+            currentChatOrder = null;
+        }
+
+        // Загрузить сообщения
+        function loadChatMessages() {
+            const messages = db.messages
+                .filter(m => m.orderId === currentChatOrder)
+                .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+            const container = document.getElementById('chat-messages');
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="message-system">Нет сообщений</div>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => {
+                if (msg.sender === 'system') {
+                    return `<div class="message-system">${msg.text}</div>`;
+                } else {
+                    const isClient = msg.sender === currentUser.id;
+                    const className = isClient ? 'message client' : 'message developer';
+                    const senderName = isClient ? 'Вы' : (msg.senderName || 'Разработчик');
+                    
+                    return `
+                        <div class="${className}">
+                            <div style="font-size: 12px; margin-bottom: 3px; opacity: 0.8;">${senderName}</div>
+                            ${msg.text}
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Отправить сообщение
+        async function sendMessage() {
+            const input = document.getElementById('chat-input-text');
+            const text = input.value.trim();
+            
+            if (!text || !currentChatOrder) return;
+            
+            const message = {
+                id: 'msg_' + Date.now(),
+                orderId: currentChatOrder,
+                text: text,
+                sender: currentUser.id,
+                senderName: currentUser.name,
+                timestamp: new Date().toISOString()
+            };
+            
+            db.messages.push(message);
+            await saveDatabase();
+            
+            input.value = '';
+            loadChatMessages();
+        }
+
+        // Обновить счетчик символов
+        function updatePromptCounter() {
+            const text = document.getElementById('project-prompt').value;
+            const counter = document.getElementById('prompt-counter');
+            const length = text.length;
+            
+            counter.textContent = `${length}/2500 символов`;
+            counter.className = length < 300 || length > 2500 ? 'prompt-counter error' : 'prompt-counter';
+        }
+
+        // Очистить форму
+        function clearForm() {
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-type').value = '';
+            document.getElementById('project-budget').value = '';
+            document.getElementById('project-deadline').value = '';
+            document.getElementById('project-prompt').value = '';
+            updatePromptCounter();
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} active`;
+            
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 3000);
+        }
+
+        // Выход
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
