@@ -1,195 +1,238 @@
-// Конфигурация базы данных (ваш Gist)
+// database.js
+// Конфигурация базы данных через ваш Gist
 const DB_CONFIG = {
     GIST_ID: '30dbe17ad2208d9eb8809574ee8ef012',
-    GIST_FILE: 'gistfile1.txt',
-    RAW_URL: 'https://gist.githubusercontent.com/uskovmaxim12-stack/30dbe17ad2208d9eb8809574ee8ef012/raw/37a0fab472c6512b31fc1ee901e1e0dac2964250/gistfile1.txt',
-    API_URL: 'https://api.github.com/gists/30dbe17ad2208d9eb8809574ee8ef012'
+    RAW_URL: 'https://gist.githubusercontent.com/uskovmaxim12-stack/30dbe17ad2208d9eb8809574ee8ef012/raw/37a0fab472c6512b31fc1ee901e1e0dac2964250/gistfile1.txt'
 };
+
+// База данных по умолчанию (будет использоваться если не удалось загрузить из Gist)
+const DEFAULT_DB = {
+    users: {
+        clients: [],
+        developers: [
+            {
+                id: "dev_1",
+                name: "Максим",
+                password: "140612",
+                avatar: "М",
+                email: "maxim@sitecore.ru",
+                phone: "+7 (999) 123-45-67",
+                telegram: "@maxim_dev",
+                specialty: "Full-stack разработчик",
+                experience: "5 лет"
+            },
+            {
+                id: "dev_2",
+                name: "Александр", 
+                password: "789563",
+                avatar: "А",
+                email: "alexander@sitecore.ru",
+                phone: "+7 (999) 987-65-43",
+                telegram: "@alexander_dev",
+                specialty: "Frontend разработчик",
+                experience: "3 года"
+            }
+        ]
+    },
+    orders: [],
+    messages: []
+};
+
+// Глобальная переменная для хранения базы данных
+let sitecoreDB = null;
 
 // Загрузка базы данных
 async function loadDatabase() {
     try {
-        // Пробуем загрузить из сети
-        const response = await fetch(DB_CONFIG.RAW_URL + '?t=' + Date.now());
+        console.log('Загрузка базы данных из Gist...');
         
-        if (!response.ok) {
-            throw new Error('Не удалось загрузить базу данных');
-        }
+        // Пытаемся загрузить из Gist с кэшированием
+        const response = await fetch(DB_CONFIG.RAW_URL + '?t=' + Date.now(), {
+            cache: 'no-cache'
+        });
         
-        const data = await response.json();
-        
-        // Сохраняем локальную копию
-        localStorage.setItem('sitecore_db_cache', JSON.stringify({
-            data: data,
-            timestamp: Date.now()
-        }));
-        
-        return data;
-        
-    } catch (error) {
-        console.log('Используем локальную копию:', error.message);
-        
-        // Пробуем загрузить из кэша
-        const cache = localStorage.getItem('sitecore_db_cache');
-        if (cache) {
-            const cached = JSON.parse(cache);
-            // Если кэш не старше 5 минут
-            if (Date.now() - cached.timestamp < 5 * 60 * 1000) {
-                return cached.data;
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Данные успешно загружены из Gist');
+            
+            // Проверяем структуру данных
+            if (data && data.users && data.developers) {
+                sitecoreDB = data;
+            } else {
+                // Если структура некорректна, используем базу по умолчанию
+                sitecoreDB = DEFAULT_DB;
+                console.warn('Структура данных в Gist некорректна, используется база по умолчанию');
             }
+        } else {
+            throw new Error('Не удалось загрузить данные из Gist');
         }
-        
-        // Если нет кэша, возвращаем базовую структуру
-        return {
-            users: {
-                clients: [],
-                developers: [
-                    {
-                        id: "dev_1",
-                        name: "Максим",
-                        password: "140612",
-                        avatar: "М",
-                        email: "maxim@sitecore.ru"
-                    },
-                    {
-                        id: "dev_2", 
-                        name: "Александр",
-                        password: "789563",
-                        avatar: "А",
-                        email: "alexander@sitecore.ru"
-                    }
-                ]
-            },
-            orders: [],
-            messages: []
-        };
-    }
-}
-
-// Сохранение базы данных
-async function saveDatabase(data) {
-    try {
-        // Сохраняем в локальный кэш
-        localStorage.setItem('sitecore_db_cache', JSON.stringify({
-            data: data,
-            timestamp: Date.now()
-        }));
-        
-        // Здесь должна быть логика сохранения на сервер
-        // Но так как у нас нет доступа к GitHub API без токена,
-        // мы будем хранить изменения только локально
-        
-        console.log('Данные сохранены локально');
-        return true;
-        
     } catch (error) {
-        console.error('Ошибка сохранения:', error);
-        throw error;
+        console.warn('Ошибка загрузки из Gist:', error.message);
+        
+        // Пробуем загрузить из localStorage
+        const localData = localStorage.getItem('sitecore_db');
+        if (localData) {
+            sitecoreDB = JSON.parse(localData);
+            console.log('Данные загружены из localStorage');
+        } else {
+            // Используем базу по умолчанию
+            sitecoreDB = DEFAULT_DB;
+            console.log('Используется база данных по умолчанию');
+        }
+    }
+    
+    // Сохраняем локальную копию
+    saveToLocalStorage();
+    return sitecoreDB;
+}
+
+// Сохранение в localStorage
+function saveToLocalStorage() {
+    if (sitecoreDB) {
+        localStorage.setItem('sitecore_db', JSON.stringify(sitecoreDB));
     }
 }
 
-// Добавление заказа
-async function addOrder(order) {
-    const db = await loadDatabase();
-    db.orders.push(order);
-    await saveDatabase(db);
-    return order;
+// Добавление нового пользователя (клиента)
+function addUser(user) {
+    if (!sitecoreDB) return false;
+    
+    // Проверяем, нет ли уже пользователя с таким email
+    const existingUser = sitecoreDB.users.clients.find(u => u.email === user.email);
+    if (existingUser) {
+        return false;
+    }
+    
+    // Добавляем ID
+    user.id = 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    user.createdAt = new Date().toISOString();
+    
+    // Добавляем в базу
+    sitecoreDB.users.clients.push(user);
+    saveToLocalStorage();
+    return true;
+}
+
+// Проверка входа клиента
+function checkClientLogin(email, password) {
+    if (!sitecoreDB) return null;
+    
+    return sitecoreDB.users.clients.find(client => 
+        client.email === email && client.password === password
+    );
+}
+
+// Проверка входа разработчика
+function checkDeveloperLogin(name, password) {
+    if (!sitecoreDB) return null;
+    
+    return sitecoreDB.users.developers.find(dev => 
+        dev.name === name && dev.password === password
+    );
+}
+
+// Получение всех заказов
+function getAllOrders() {
+    return sitecoreDB ? sitecoreDB.orders : [];
+}
+
+// Получение заказов клиента
+function getClientOrders(clientId) {
+    if (!sitecoreDB) return [];
+    
+    return sitecoreDB.orders.filter(order => order.clientId === clientId);
+}
+
+// Получение заказов разработчика
+function getDeveloperOrders(developerId) {
+    if (!sitecoreDB) return [];
+    
+    return sitecoreDB.orders.filter(order => 
+        order.assignedTo === developerId || !order.assignedTo
+    );
+}
+
+// Создание нового заказа
+function createOrder(orderData) {
+    if (!sitecoreDB) return null;
+    
+    const newOrder = {
+        id: 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        ...orderData,
+        status: 'new',
+        assignedTo: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    sitecoreDB.orders.push(newOrder);
+    saveToLocalStorage();
+    return newOrder;
 }
 
 // Обновление заказа
-async function updateOrder(orderId, updates) {
-    const db = await loadDatabase();
-    const orderIndex = db.orders.findIndex(o => o.id === orderId);
+function updateOrder(orderId, updates) {
+    if (!sitecoreDB) return false;
     
-    if (orderIndex !== -1) {
-        db.orders[orderIndex] = { ...db.orders[orderIndex], ...updates };
-        await saveDatabase(db);
-        return db.orders[orderIndex];
-    }
+    const orderIndex = sitecoreDB.orders.findIndex(order => order.id === orderId);
+    if (orderIndex === -1) return false;
     
-    return null;
+    sitecoreDB.orders[orderIndex] = {
+        ...sitecoreDB.orders[orderIndex],
+        ...updates,
+        updatedAt: new Date().toISOString()
+    };
+    
+    saveToLocalStorage();
+    return true;
 }
 
 // Добавление сообщения
-async function addMessage(message) {
-    const db = await loadDatabase();
-    db.messages.push(message);
-    await saveDatabase(db);
-    return message;
+function addMessage(messageData) {
+    if (!sitecoreDB) return null;
+    
+    const newMessage = {
+        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        ...messageData,
+        timestamp: new Date().toISOString()
+    };
+    
+    if (!sitecoreDB.messages) {
+        sitecoreDB.messages = [];
+    }
+    
+    sitecoreDB.messages.push(newMessage);
+    saveToLocalStorage();
+    return newMessage;
 }
 
-// Получение сообщений по заказу
-async function getOrderMessages(orderId) {
-    const db = await loadDatabase();
-    return db.messages
-        .filter(m => m.orderId === orderId)
+// Получение сообщений заказа
+function getOrderMessages(orderId) {
+    if (!sitecoreDB || !sitecoreDB.messages) return [];
+    
+    return sitecoreDB.messages
+        .filter(msg => msg.orderId === orderId)
         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 }
 
-// Получение заказов пользователя
-async function getUserOrders(userId, userType) {
-    const db = await loadDatabase();
-    
-    if (userType === 'client') {
-        return db.orders.filter(o => o.clientId === userId);
-    } else if (userType === 'developer') {
-        return db.orders.filter(o => o.assignedTo === userId || !o.assignedTo);
-    }
-    
-    return [];
-}
+// Инициализация базы данных при загрузке
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadDatabase();
+    console.log('База данных SiteCore готова к работе');
+});
 
-// Обновление статуса заказа
-async function updateOrderStatus(orderId, status, developerId = null) {
-    const db = await loadDatabase();
-    const orderIndex = db.orders.findIndex(o => o.id === orderId);
-    
-    if (orderIndex !== -1) {
-        const updateData = {
-            status: status,
-            updatedAt: new Date().toISOString()
-        };
-        
-        if (developerId) {
-            updateData.assignedTo = developerId;
-        }
-        
-        db.orders[orderIndex] = { ...db.orders[orderIndex], ...updateData };
-        await saveDatabase(db);
-        return db.orders[orderIndex];
-    }
-    
-    return null;
-}
-
-// ИИ помощник для клиентов
-const assistantAI = {
-    // Ответы на частые вопросы
-    responses: {
-        'привет|здравствуй|здравствуйте': 'Привет! Я помогу вам с созданием сайта. Что вас интересует?',
-        'стоимость|цена|сколько стоит': 'Стоимость зависит от типа сайта:\n- Статический: от 20 000 ₽\n- Динамический: от 50 000 ₽\nТочную стоимость можно рассчитать при создании заказа.',
-        'сроки|сколько времени|как долго': 'Сроки разработки:\n- Статический сайт: 7-14 дней\n- Динамический сайт: 14-30 дней\nСроки могут меняться в зависимости от сложности.',
-        'типы сайтов|какие сайты': 'Мы разрабатываем:\n1. Статические сайты - визитки, лендинги\n2. Динамические сайты - интернет-магазины, корпоративные порталы\n3. Веб-приложения - CRM, личные кабинеты',
-        'заказ|создать заказ|оформить': 'Чтобы создать заказ:\n1. Перейдите в раздел "Создать заказ"\n2. Заполните форму\n3. Опишите детали в промте\n4. Укажите бюджет и сроки',
-        'промт|что написать в промте': 'В промте опишите:\n1. Цель сайта\n2. Целевую аудиторию\n3. Предпочитаемый дизайн\n4. Необходимый функционал\n5. Примеры похожих сайтов (если есть)',
-        'оплата|как оплатить': 'Оплата поэтапная:\n1. 30% - начало работы\n2. 30% - готовый дизайн\n3. 40% - сдача проекта\nВозможна оплата картой или переводом.',
-        'связь|контакты|как связаться': 'Вы можете связаться:\n1. Через чат в заказе\n2. Telegram менеджера\n3. Email: support@sitecore.ru',
-        'гарантии|что если не понравится': 'Мы предоставляем:\n1. 3 бесплатных правки дизайна\n2. Тестовый период 7 дней\n3. Гарантию на работу 1 год\n4. Бесплатная техническая поддержка 1 месяц',
-        'спасибо|благодарю': 'Всегда рады помочь! Если есть еще вопросы - обращайтесь.',
-        'пока|до свидания': 'До свидания! Удачного дня!'
-    },
-    
-    // Поиск ответа по вопросу
-    findResponse(question) {
-        const lowerQuestion = question.toLowerCase();
-        
-        for (const [keywords, response] of Object.entries(this.responses)) {
-            const keywordList = keywords.split('|');
-            if (keywordList.some(keyword => lowerQuestion.includes(keyword))) {
-                return response;
-            }
-        }
-        
-        return 'Извините, я не понял вопрос. Можете переформулировать? Или задайте вопрос о стоимости, сроках, типах сайтов или создании заказа.';
-    }
+// Экспортируем функции для использования в других файлах
+window.db = {
+    loadDatabase,
+    addUser,
+    checkClientLogin,
+    checkDeveloperLogin,
+    getAllOrders,
+    getClientOrders,
+    getDeveloperOrders,
+    createOrder,
+    updateOrder,
+    addMessage,
+    getOrderMessages,
+    getDevelopers: () => sitecoreDB ? sitecoreDB.users.developers : []
 };
