@@ -3,94 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiteCore | Клиент</title>
+    <title>SiteCore - Личный кабинет</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="database.js"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #10b981;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-            --danger: #ef4444;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: var(--light);
-            color: var(--dark);
-            min-height: 100vh;
+            background: #f8f9fa;
+            color: #333;
         }
 
         /* Шапка */
         .header {
             background: white;
-            padding: 15px 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+
+        .nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .logo h1 {
-            font-size: 24px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 20px;
             font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
         }
 
-        .user-info {
+        .user-menu {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .user-avatar {
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-weight: bold;
-            font-size: 18px;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
+        .logout-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
             border-radius: 8px;
+            color: #495057;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .btn-logout {
-            background: var(--light);
-            color: var(--gray);
-            border: 2px solid #e5e7eb;
-        }
-
-        .btn-logout:hover {
-            background: #e5e7eb;
+        .logout-btn:hover {
+            background: #e9ecef;
         }
 
         /* Основной контент */
@@ -100,183 +93,68 @@
             padding: 20px;
         }
 
-        /* Статистика */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
         /* Табы */
         .tabs {
             display: flex;
             background: white;
             border-radius: 12px;
-            padding: 5px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            overflow-x: auto;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .tab {
             flex: 1;
-            min-width: 120px;
-            padding: 12px;
-            border: none;
+            padding: 20px;
+            text-align: center;
             background: none;
-            border-radius: 8px;
+            border: none;
             font-size: 16px;
             font-weight: 600;
-            color: var(--gray);
+            color: #6c757d;
             cursor: pointer;
             transition: all 0.3s;
-            white-space: nowrap;
         }
 
         .tab.active {
-            background: var(--primary);
+            background: linear-gradient(90deg, #667eea, #764ba2);
             color: white;
         }
 
         /* Контент табов */
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Форма заказа */
-        .create-order {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 15px 30px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--light);
-            color: var(--gray);
-            border: 2px solid #e5e7eb;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-        }
-
-        .prompt-counter {
-            text-align: right;
-            font-size: 14px;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        .prompt-counter.error {
-            color: var(--danger);
-        }
-
-        /* Список заказов */
+        /* Карточки заказов */
         .orders-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
 
         .order-card {
             background: white;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: all 0.3s;
         }
 
         .order-card:hover {
-            border-color: var(--primary);
             transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
         .order-header {
@@ -288,100 +166,204 @@
 
         .order-title {
             font-size: 18px;
-            font-weight: 700;
-            color: var(--dark);
+            font-weight: 600;
+            color: #333;
             margin-bottom: 5px;
         }
 
-        .order-date {
-            font-size: 14px;
-            color: var(--gray);
-        }
-
         .order-status {
-            padding: 5px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
 
-        .status-new { background: #dbeafe; color: #1d4ed8; }
-        .status-in-progress { background: #fef3c7; color: #d97706; }
-        .status-review { background: #fce7f3; color: #be185d; }
-        .status-completed { background: #dcfce7; color: #16a34a; }
+        .status-new { background: #e3f2fd; color: #1565c0; }
+        .status-progress { background: #fff3e0; color: #ef6c00; }
+        .status-review { background: #f3e5f5; color: #7b1fa2; }
+        .status-completed { background: #e8f5e8; color: #2e7d32; }
 
         .order-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
-        .detail-item span:first-child {
-            display: block;
-            font-size: 12px;
-            color: var(--gray);
-            margin-bottom: 3px;
+        .detail-item {
+            font-size: 14px;
         }
 
-        .detail-item span:last-child {
+        .detail-label {
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
             font-weight: 600;
         }
 
         .order-actions {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
         }
 
-        .btn-small {
-            padding: 8px 15px;
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
             font-size: 14px;
-            border-radius: 6px;
-            flex: 1;
-        }
-
-        /* Чат */
-        .chat-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .chat-modal.active {
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .chat-content {
+        .btn-primary {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        /* Форма создания заказа */
+        .form-card {
             background: white;
             border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .chat-header {
+        .form-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .char-counter.error {
+            color: #dc3545;
+        }
+
+        /* Помощник */
+        .assistant-card {
+            background: white;
+            border-radius: 12px;
             padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .assistant-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .assistant-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .assistant-info p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -389,104 +371,88 @@
 
         .message {
             max-width: 80%;
-            padding: 12px;
-            border-radius: 12px;
-            word-wrap: break-word;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
         }
 
-        .message.client {
+        .message.user {
             align-self: flex-end;
-            background: var(--primary);
+            background: linear-gradient(90deg, #667eea, #764ba2);
             color: white;
+            border-bottom-right-radius: 5px;
         }
 
-        .message.developer {
+        .message.assistant {
             align-self: flex-start;
-            background: #e5e7eb;
-            color: var(--dark);
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 5px;
         }
 
-        .message-system {
-            align-self: center;
-            background: #fef3c7;
-            color: #92400e;
+        .message-sender {
             font-size: 12px;
-            padding: 8px 12px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 3px;
         }
 
         .chat-input {
-            padding: 15px;
-            border-top: 1px solid #e5e7eb;
             display: flex;
             gap: 10px;
         }
 
-        .chat-input textarea {
+        .chat-input input {
             flex: 1;
             padding: 12px;
-            min-height: 50px;
-            max-height: 100px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
-        /* Пустое состояние */
+        .chat-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            width: 50px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Пустые состояния */
         .empty-state {
             text-align: center;
             padding: 50px 20px;
-            color: var(--gray);
+            color: #6c757d;
         }
 
         .empty-state i {
-            font-size: 48px;
+            font-size: 50px;
             margin-bottom: 15px;
             opacity: 0.5;
         }
 
         .empty-state h3 {
             margin-bottom: 10px;
-            color: var(--dark);
-        }
-
-        /* Уведомление */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--dark);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: none;
-            z-index: 1001;
-        }
-
-        .notification.active {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .notification.success {
-            background: var(--secondary);
-        }
-
-        .notification.error {
-            background: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            color: #495057;
         }
 
         /* Адаптивность */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .stats {
+            .form-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -494,12 +460,21 @@
                 grid-template-columns: 1fr;
             }
             
-            .form-actions {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tabs {
                 flex-direction: column;
             }
             
-            .btn-primary, .btn-secondary {
-                width: 100%;
+            .tab {
+                padding: 15px;
+            }
+            
+            .chat-container {
+                height: 300px;
             }
         }
 
@@ -508,16 +483,22 @@
                 padding: 15px;
             }
             
-            .create-order {
+            .form-card {
                 padding: 20px;
             }
             
-            .order-details {
-                grid-template-columns: 1fr;
+            .order-actions {
+                flex-direction: column;
             }
             
-            .chat-content {
-                max-height: 90vh;
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .user-menu {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -525,496 +506,425 @@
 <body>
     <!-- Шапка -->
     <div class="header">
-        <div class="logo">
-            <h1>SiteCore</h1>
-        </div>
-        
-        <div class="user-info">
-            <div class="user-avatar" id="user-avatar">К</div>
-            <button class="btn btn-logout" onclick="logout()">Выйти</button>
+        <div class="nav">
+            <a href="#" class="logo" onclick="showTab('orders')">
+                <i class="fas fa-code"></i>
+                SiteCore
+            </a>
+            
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">К</div>
+                    <div>
+                        <div id="userName">Клиент</div>
+                        <small id="userEmail">email@example.com</small>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Выйти</button>
+            </div>
         </div>
     </div>
 
     <!-- Основной контент -->
     <div class="container">
-        <!-- Статистика -->
-        <div class="stats" id="stats">
-            <!-- Заполнится через JS -->
-        </div>
-
         <!-- Табы -->
         <div class="tabs">
             <button class="tab active" onclick="showTab('orders')">Мои заказы</button>
-            <button class="tab" onclick="showTab('create')">Новый заказ</button>
+            <button class="tab" onclick="showTab('create')">Создать заказ</button>
+            <button class="tab" onclick="showTab('assistant')">Помощник</button>
         </div>
 
         <!-- Мои заказы -->
         <div id="orders-tab" class="tab-content active">
-            <div class="orders-grid" id="orders-grid">
-                <!-- Заполнится через JS -->
+            <div class="orders-grid" id="ordersGrid">
+                <!-- Заказы загрузятся через JS -->
+            </div>
+            
+            <div class="empty-state" id="noOrders" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>У вас пока нет заказов</h3>
+                <p>Создайте первый заказ на разработку сайта</p>
+                <button class="btn btn-primary" onclick="showTab('create')" style="margin-top: 20px;">
+                    Создать заказ
+                </button>
             </div>
         </div>
 
         <!-- Создание заказа -->
         <div id="create-tab" class="tab-content">
-            <div class="create-order">
-                <div class="form-group">
-                    <label>Название проекта *</label>
-                    <input type="text" id="project-name" placeholder="Например: Интернет-магазин одежды">
+            <div class="form-card">
+                <h2 class="form-title">Создание заказа</h2>
+                <form id="createOrderForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="projectName">Название проекта *</label>
+                            <input type="text" id="projectName" placeholder="Мой новый сайт" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="projectType">Тип сайта *</label>
+                            <select id="projectType" required>
+                                <option value="">Выберите тип</option>
+                                <option value="static">Статический сайт</option>
+                                <option value="dynamic">Динамический сайт</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="projectBudget">Бюджет (₽) *</label>
+                            <input type="number" id="projectBudget" placeholder="50000" min="10000" step="1000" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="projectDeadline">Срок (дней) *</label>
+                            <input type="number" id="projectDeadline" placeholder="30" min="7" max="365" required>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group full">
+                        <label for="projectPrompt">Техническое задание (промт) *</label>
+                        <textarea id="projectPrompt" placeholder="Опишите подробно, какой сайт вам нужен. Укажите:
+- Цель сайта
+- Целевую аудиторию
+- Предпочитаемый дизайн
+- Необходимый функционал
+- Примеры похожих сайтов" required></textarea>
+                        <div class="char-counter" id="charCounter">
+                            Минимум 300 символов, максимум 2500
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                            Очистить
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Создать заказ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Помощник -->
+        <div id="assistant-tab" class="tab-content">
+            <div class="assistant-card">
+                <div class="assistant-header">
+                    <div class="assistant-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="assistant-info">
+                        <h3>Помощник SiteCore</h3>
+                        <p>Задайте вопросы о разработке сайтов, стоимости и сроках</p>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Тип сайта *</label>
-                    <select id="project-type">
-                        <option value="">-- Выберите --</option>
-                        <option value="static">Статический сайт</option>
-                        <option value="dynamic">Динамический сайт</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Бюджет (₽) *</label>
-                    <input type="number" id="project-budget" placeholder="Например: 50000" min="10000" step="1000">
-                </div>
-                
-                <div class="form-group">
-                    <label>Срок (дней) *</label>
-                    <input type="number" id="project-deadline" placeholder="Например: 30" min="7" max="365">
-                </div>
-                
-                <div class="form-group">
-                    <label>Техническое задание (300-2500 символов) *</label>
-                    <textarea id="project-prompt" placeholder="Опишите подробно, какой сайт вам нужен..."></textarea>
-                    <div class="prompt-counter" id="prompt-counter">0/2500 символов</div>
-                </div>
-                
-                <div class="form-actions">
-                    <button class="btn-secondary" onclick="clearForm()">Очистить</button>
-                    <button class="btn-primary" onclick="createOrder()">Создать заказ</button>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant">
+                            <div class="message-sender">Помощник</div>
+                            Привет! Я помогу вам с созданием сайта. Вы можете спросить о:
+                            - Стоимости и сроках
+                            - Типах сайтов
+                            - Как создать заказ
+                            - Что написать в промте
+                            - Гарантиях и оплате
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Задайте вопрос..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Чат -->
-    <div class="chat-modal" id="chat-modal">
-        <div class="chat-content">
-            <div class="chat-header">
-                <h3 id="chat-title">Чат по заказу</h3>
-                <button class="btn-secondary" onclick="closeChat()">Закрыть</button>
-            </div>
-            
-            <div class="chat-messages" id="chat-messages">
-                <!-- Сообщения загружаются через JS -->
-            </div>
-            
-            <div class="chat-input">
-                <textarea id="chat-input-text" placeholder="Введите сообщение..." onkeydown="if(event.key === 'Enter' && !event.shiftKey) {event.preventDefault(); sendMessage();}"></textarea>
-                <button class="btn-primary" onclick="sendMessage()">Отправить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Уведомление -->
-    <div class="notification" id="notification"></div>
 
     <script>
-        // Конфигурация
-        const GIST_ID = '30dbe17ad2208d9eb8809574ee8ef012';
-        const GIST_URL = `https://gist.githubusercontent.com/uskovmaxim12-stack/${GIST_ID}/raw/sitecore_db.json`;
-        
-        let db = null;
         let currentUser = null;
-        let currentChatOrder = null;
-
-        // Загрузка базы
-        async function loadDatabase() {
-            try {
-                const response = await fetch(GIST_URL + '?' + Date.now());
-                const text = await response.text();
-                db = JSON.parse(text);
-                localStorage.setItem('sitecore_db', JSON.stringify(db));
-                return true;
-            } catch (error) {
-                const local = localStorage.getItem('sitecore_db');
-                if (local) {
-                    db = JSON.parse(local);
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        // Сохранение базы
-        async function saveDatabase() {
-            try {
-                localStorage.setItem('sitecore_db', JSON.stringify(db));
-                
-                // Пытаемся сохранить в облако
-                await fetch('https://api.jsonbin.io/v3/b', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': '$2b$10$M8g3O.9wV4KjXp5L6N7Q8eR9sT0uV1wX2yZ3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P'
-                    },
-                    body: JSON.stringify(db)
-                });
-                return true;
-            } catch (error) {
-                console.log('Сохранено локально');
-                return true;
-            }
-        }
-
-        // Инициализация
-        async function init() {
-            // Проверка авторизации
-            const userData = sessionStorage.getItem('currentUser');
-            if (!userData) {
+        
+        // Проверка авторизации
+        function checkAuth() {
+            const userData = sessionStorage.getItem('user');
+            if (!userData || JSON.parse(userData).type !== 'client') {
                 window.location.href = 'index.html';
                 return;
             }
             
             currentUser = JSON.parse(userData);
-            if (currentUser.type !== 'client') {
-                window.location.href = 'index.html';
-                return;
-            }
             
-            await loadDatabase();
-            
-            // Обновляем UI
-            document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
-            updateStats();
-            loadOrders();
-            
-            // Слушатель для промта
-            document.getElementById('project-prompt').addEventListener('input', updatePromptCounter);
+            // Обновляем информацию о пользователе
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
         }
-
+        
         // Показать таб
-        function showTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        function showTab(tabName) {
+            // Обновляем активные табы
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById(tab + '-tab').style.display = 'block';
-        }
-
-        // Обновить статистику
-        function updateStats() {
-            const orders = db.orders.filter(o => o.clientId === currentUser.id);
-            const active = orders.filter(o => !['completed', 'cancelled'].includes(o.status)).length;
-            const completed = orders.filter(o => o.status === 'completed').length;
+            // Показываем нужный контент
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
             
-            document.getElementById('stats').innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-value">${orders.length}</div>
-                    <div class="stat-label">Всего заказов</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${active}</div>
-                    <div class="stat-label">Активных</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${completed}</div>
-                    <div class="stat-label">Завершено</div>
-                </div>
-            `;
-        }
-
-        // Загрузить заказы
-        function loadOrders() {
-            const orders = db.orders.filter(o => o.clientId === currentUser.id).sort((a,b) => new Date(b.created) - new Date(a.created));
-            const container = document.getElementById('orders-grid');
-            
-            if (orders.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>У вас пока нет заказов</h3>
-                        <p>Создайте свой первый заказ на разработку сайта</p>
-                        <button class="btn-primary" onclick="showTab('create')" style="margin-top: 15px;">Создать заказ</button>
-                    </div>
-                `;
-                return;
+            if (tabName === 'orders') {
+                loadOrders();
+            } else if (tabName === 'create') {
+                setupForm();
             }
-            
-            container.innerHTML = orders.map(order => {
-                const statusText = {
-                    'new': 'Новый',
-                    'in-progress': 'В работе',
-                    'review': 'На проверке',
-                    'completed': 'Завершен',
-                    'cancelled': 'Отменен'
-                }[order.status] || order.status;
+        }
+        
+        // Загрузка заказов
+        async function loadOrders() {
+            try {
+                const orders = await getUserOrders(currentUser.id, 'client');
+                const container = document.getElementById('ordersGrid');
+                const noOrders = document.getElementById('noOrders');
                 
-                const statusClass = 'status-' + order.status;
-                
-                // Получаем последнее сообщение
-                const messages = db.messages.filter(m => m.orderId === order.id);
-                const lastMsg = messages[messages.length - 1];
-                let lastMsgText = 'Нет сообщений';
-                if (lastMsg) {
-                    const time = new Date(lastMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    lastMsgText = `${lastMsg.senderName || 'Разработчик'}: ${lastMsg.text.substring(0, 40)}... (${time})`;
+                if (orders.length === 0) {
+                    container.innerHTML = '';
+                    noOrders.style.display = 'block';
+                    return;
                 }
                 
-                return `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-title">${order.projectName}</div>
-                                <div class="order-date">${new Date(order.created).toLocaleDateString()}</div>
-                            </div>
-                            <div class="order-status ${statusClass}">${statusText}</div>
-                        </div>
-                        
-                        <div class="order-details">
-                            <div class="detail-item">
-                                <span>Тип</span>
-                                <span>${order.projectType === 'static' ? 'Статический' : 'Динамический'}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span>Бюджет</span>
-                                <span>${order.budget.toLocaleString()} ₽</span>
-                            </div>
-                            <div class="detail-item">
-                                <span>Срок</span>
-                                <span>${order.deadline} дн.</span>
-                            </div>
-                            <div class="detail-item">
-                                <span>Разработчик</span>
-                                <span>${order.developerName || 'Не назначен'}</span>
-                            </div>
-                        </div>
-                        
-                        <div style="font-size: 14px; color: var(--gray); margin: 10px 0;">
-                            <i class="far fa-comment"></i> ${lastMsgText}
-                        </div>
-                        
-                        <div class="order-actions">
-                            <button class="btn-primary btn-small" onclick="openChat('${order.id}')">Чат</button>
-                            ${order.status === 'new' ? `
-                                <button class="btn-secondary btn-small" onclick="cancelOrder('${order.id}')">Отменить</button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Создать заказ
-        async function createOrder() {
-            const name = document.getElementById('project-name').value.trim();
-            const type = document.getElementById('project-type').value;
-            const budget = parseInt(document.getElementById('project-budget').value);
-            const deadline = parseInt(document.getElementById('project-deadline').value);
-            const prompt = document.getElementById('project-prompt').value.trim();
-            
-            // Проверки
-            if (!name || !type || !budget || !deadline || !prompt) {
-                showNotification('Заполните все поля', 'error');
-                return;
-            }
-            
-            if (prompt.length < 300) {
-                showNotification('Техническое задание должно быть не менее 300 символов', 'error');
-                return;
-            }
-            
-            if (prompt.length > 2500) {
-                showNotification('Техническое задание должно быть не более 2500 символов', 'error');
-                return;
-            }
-            
-            if (budget < 10000) {
-                showNotification('Бюджет должен быть не менее 10,000 ₽', 'error');
-                return;
-            }
-            
-            // Создаем заказ
-            const order = {
-                id: 'order_' + Date.now(),
-                clientId: currentUser.id,
-                clientName: currentUser.name,
-                clientEmail: currentUser.email,
-                clientPhone: currentUser.phone,
-                clientTelegram: currentUser.telegram,
-                projectName: name,
-                projectType: type,
-                budget: budget,
-                deadline: deadline,
-                prompt: prompt,
-                status: 'new',
-                developerId: null,
-                developerName: null,
-                created: new Date().toISOString()
-            };
-            
-            // Добавляем в базу
-            db.orders.push(order);
-            await saveDatabase();
-            
-            // Системное сообщение
-            const message = {
-                id: 'msg_' + Date.now(),
-                orderId: order.id,
-                text: `Заказ "${name}" создан. Ожидайте, пока разработчик возьмет его в работу.`,
-                sender: 'system',
-                timestamp: new Date().toISOString()
-            };
-            
-            db.messages.push(message);
-            await saveDatabase();
-            
-            // Обновляем UI
-            showNotification('Заказ успешно создан!', 'success');
-            clearForm();
-            showTab('orders');
-            updateStats();
-            loadOrders();
-        }
-
-        // Отменить заказ
-        async function cancelOrder(orderId) {
-            if (!confirm('Вы уверены, что хотите отменить этот заказ?')) return;
-            
-            const order = db.orders.find(o => o.id === orderId);
-            if (order) {
-                order.status = 'cancelled';
+                noOrders.style.display = 'none';
                 
-                // Системное сообщение
-                const message = {
-                    id: 'msg_' + Date.now(),
-                    orderId: orderId,
-                    text: 'Заказ отменен клиентом.',
-                    sender: 'system',
-                    timestamp: new Date().toISOString()
-                };
+                // Сортируем по дате (новые сначала)
+                orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
-                db.messages.push(message);
-                await saveDatabase();
-                
-                showNotification('Заказ отменен', 'success');
-                updateStats();
-                loadOrders();
-            }
-        }
-
-        // Открыть чат
-        function openChat(orderId) {
-            currentChatOrder = orderId;
-            const order = db.orders.find(o => o.id === orderId);
-            
-            if (order) {
-                document.getElementById('chat-title').textContent = `Чат: ${order.projectName}`;
-                document.getElementById('chat-modal').classList.add('active');
-                loadChatMessages();
-            }
-        }
-
-        // Закрыть чат
-        function closeChat() {
-            document.getElementById('chat-modal').classList.remove('active');
-            document.getElementById('chat-input-text').value = '';
-            currentChatOrder = null;
-        }
-
-        // Загрузить сообщения
-        function loadChatMessages() {
-            const messages = db.messages
-                .filter(m => m.orderId === currentChatOrder)
-                .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-            
-            const container = document.getElementById('chat-messages');
-            
-            if (messages.length === 0) {
-                container.innerHTML = '<div class="message-system">Нет сообщений</div>';
-                return;
-            }
-            
-            container.innerHTML = messages.map(msg => {
-                if (msg.sender === 'system') {
-                    return `<div class="message-system">${msg.text}</div>`;
-                } else {
-                    const isClient = msg.sender === currentUser.id;
-                    const className = isClient ? 'message client' : 'message developer';
-                    const senderName = isClient ? 'Вы' : (msg.senderName || 'Разработчик');
+                container.innerHTML = orders.map(order => {
+                    const statusText = {
+                        'new': 'Новый',
+                        'progress': 'В работе',
+                        'review': 'На проверке',
+                        'completed': 'Завершен'
+                    };
+                    
+                    const statusClass = {
+                        'new': 'status-new',
+                        'progress': 'status-progress',
+                        'review': 'status-review',
+                        'completed': 'status-completed'
+                    };
                     
                     return `
-                        <div class="${className}">
-                            <div style="font-size: 12px; margin-bottom: 3px; opacity: 0.8;">${senderName}</div>
-                            ${msg.text}
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-title">${order.projectName}</div>
+                                    <small>${new Date(order.createdAt).toLocaleDateString()}</small>
+                                </div>
+                                <div class="order-status ${statusClass[order.status]}">
+                                    ${statusText[order.status]}
+                                </div>
+                            </div>
+                            
+                            <div class="order-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Тип</div>
+                                    <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Бюджет</div>
+                                    <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Срок</div>
+                                    <div class="detail-value">${order.deadline} дней</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Разработчик</div>
+                                    <div class="detail-value">${order.assignedTo ? 'Назначен' : 'В поиске'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button class="btn btn-primary" onclick="openChat('${order.id}')">
+                                    <i class="fas fa-comment"></i> Чат
+                                </button>
+                                ${order.status === 'new' ? `
+                                    <button class="btn btn-secondary" onclick="cancelOrder('${order.id}')">
+                                        <i class="fas fa-times"></i> Отменить
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
                     `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки заказов:', error);
+            }
+        }
+        
+        // Настройка формы
+        function setupForm() {
+            const promptInput = document.getElementById('projectPrompt');
+            const counter = document.getElementById('charCounter');
+            
+            promptInput.addEventListener('input', function() {
+                const length = this.value.length;
+                let text = `${length} символов`;
+                
+                if (length < 300) {
+                    text += ` (нужно еще ${300 - length})`;
+                    counter.className = 'char-counter error';
+                } else if (length > 2500) {
+                    text += ` (превышено на ${length - 2500})`;
+                    counter.className = 'char-counter error';
+                } else {
+                    counter.className = 'char-counter';
                 }
-            }).join('');
+                
+                counter.textContent = text;
+            });
             
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Отправить сообщение
-        async function sendMessage() {
-            const input = document.getElementById('chat-input-text');
-            const text = input.value.trim();
-            
-            if (!text || !currentChatOrder) return;
-            
-            const message = {
-                id: 'msg_' + Date.now(),
-                orderId: currentChatOrder,
-                text: text,
-                sender: currentUser.id,
-                senderName: currentUser.name,
-                timestamp: new Date().toISOString()
+            // Обработка формы
+            document.getElementById('createOrderForm').onsubmit = async function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('projectName').value;
+                const type = document.getElementById('projectType').value;
+                const budget = parseInt(document.getElementById('projectBudget').value);
+                const deadline = parseInt(document.getElementById('projectDeadline').value);
+                const prompt = document.getElementById('projectPrompt').value;
+                
+                // Проверка промта
+                if (prompt.length < 300 || prompt.length > 2500) {
+                    alert('Промт должен содержать от 300 до 2500 символов');
+                    return;
+                }
+                
+                try {
+                    // Создаем заказ
+                    const order = {
+                        id: 'order_' + Date.now(),
+                        clientId: currentUser.id,
+                        clientName: currentUser.name,
+                        clientEmail: currentUser.email,
+                        clientPhone: currentUser.phone,
+                        clientTelegram: currentUser.telegram,
+                        projectName: name,
+                        projectType: type,
+                        budget: budget,
+                        deadline: deadline,
+                        prompt: prompt,
+                        status: 'new',
+                        assignedTo: null,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    await addOrder(order);
+                    
+                    // Добавляем системное сообщение
+                    await addMessage({
+                        id: 'msg_' + Date.now(),
+                        orderId: order.id,
+                        text: `Заказ "${name}" создан. Ожидайте, пока разработчик возьмет его в работу.`,
+                        sender: 'system',
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    alert('Заказ успешно создан!');
+                    clearForm();
+                    showTab('orders');
+                    
+                } catch (error) {
+                    alert('Ошибка при создании заказа: ' + error.message);
+                }
             };
-            
-            db.messages.push(message);
-            await saveDatabase();
-            
-            input.value = '';
-            loadChatMessages();
         }
-
-        // Обновить счетчик символов
-        function updatePromptCounter() {
-            const text = document.getElementById('project-prompt').value;
-            const counter = document.getElementById('prompt-counter');
-            const length = text.length;
-            
-            counter.textContent = `${length}/2500 символов`;
-            counter.className = length < 300 || length > 2500 ? 'prompt-counter error' : 'prompt-counter';
-        }
-
-        // Очистить форму
+        
+        // Очистка формы
         function clearForm() {
-            document.getElementById('project-name').value = '';
-            document.getElementById('project-type').value = '';
-            document.getElementById('project-budget').value = '';
-            document.getElementById('project-deadline').value = '';
-            document.getElementById('project-prompt').value = '';
-            updatePromptCounter();
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectType').value = '';
+            document.getElementById('projectBudget').value = '';
+            document.getElementById('projectDeadline').value = '';
+            document.getElementById('projectPrompt').value = '';
+            document.getElementById('charCounter').textContent = 'Минимум 300 символов, максимум 2500';
+            document.getElementById('charCounter').className = 'char-counter';
         }
-
-        // Показать уведомление
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type} active`;
+        
+        // Отмена заказа
+        async function cancelOrder(orderId) {
+            if (!confirm('Вы уверены, что хотите отменить заказ?')) return;
             
-            setTimeout(() => {
-                notification.classList.remove('active');
-            }, 3000);
+            try {
+                await updateOrderStatus(orderId, 'cancelled');
+                await loadOrders();
+                alert('Заказ отменен');
+            } catch (error) {
+                alert('Ошибка при отмене заказа: ' + error.message);
+            }
         }
-
+        
+        // Открыть чат с разработчиком
+        function openChat(orderId) {
+            // В реальном приложении здесь бы открывалось модальное окно с чатом
+            alert('Чат будет открыт в следующей версии. Сейчас вы можете связаться с разработчиком через Telegram.');
+        }
+        
+        // Работа с помощником
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatContainer = document.getElementById('chatMessages');
+            
+            // Добавляем сообщение пользователя
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `
+                <div class="message-sender">Вы</div>
+                ${message}
+                <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            `;
+            chatContainer.appendChild(userMessage);
+            
+            // Очищаем поле ввода
+            input.value = '';
+            
+            // Прокрутка вниз
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Имитация ответа помощника
+            setTimeout(() => {
+                const response = assistantAI.findResponse(message);
+                
+                const assistantMessage = document.createElement('div');
+                assistantMessage.className = 'message assistant';
+                assistantMessage.innerHTML = `
+                    <div class="message-sender">Помощник</div>
+                    ${response.replace(/\n/g, '<br>')}
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                chatContainer.appendChild(assistantMessage);
+                
+                // Прокрутка вниз
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 500);
+        }
+        
         // Выход
         function logout() {
-            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('user');
             window.location.href = 'index.html';
         }
-
+        
         // Инициализация
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadOrders();
+        });
     </script>
 </body>
 </html>
