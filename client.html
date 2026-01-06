@@ -1310,214 +1310,495 @@
     </div>
 
     <script>
-// Загрузка заказов
-async function loadOrders() {
-    try {
-        // Загружаем свежие данные
-        await window.db.load();
+    let currentUser = null;
+    let currentSection = 'orders';
+    
+    // ИИ помощник
+    const assistantAI = {
+        responses: {
+            'привет|здравствуй|здравствуйте|хай|приветствую': 'Привет! Я помощник SiteCore. Чем могу помочь?',
+            'стоимость|цена|сколько стоит|бюджет': 'Стоимость зависит от типа сайта:\n\n• Статический сайт: от 20 000 ₽\n• Динамический сайт: от 50 000 ₽\n• Веб-приложение: от 100 000 ₽\n\nДля точного расчета заполните форму заказа.',
+            'сроки|сколько времени|как долго|дни|недели': 'Примерные сроки разработки:\n\n• Статический сайт: 7-14 дней\n• Динамический сайт: 14-30 дней\n• Сложный проект: 1-3 месяца\n\nСроки могут меняться в зависимости от сложности.',
+            'типы сайтов|какие сайты|варианты|разновидности': 'Мы разрабатываем:\n\n1. Статические сайты - визитки, лендинги, портфолио\n2. Динамические сайты - интернет-магазины, корпоративные порталы\n3. Веб-приложения - CRM, личные кабинеты, онлайн-сервисы',
+            'заказ|создать заказ|оформить|начать проект': 'Чтобы создать заказ:\n1. Перейдите в раздел "Создать заказ"\n2. Заполните все поля формы\n3. Подробно опишите проект в промте\n4. Укажите бюджет и сроки\n5. Нажмите "Создать заказ"',
+            'промт|что написать в промте|техническое задание|тз': 'В промте опишите:\n\n• Цель и задачи сайта\n• Целевую аудиторию\n• Предпочитаемый дизайн и цвета\n• Необходимый функционал\n• Интеграции с другими сервисами\n• Примеры понравившихся сайтов',
+            'оплата|как оплатить|способы оплаты|перевод|карта': 'Оплата поэтапная:\n\n1. 30% - предоплата при начале работы\n2. 30% - после согласования дизайна\n3. 40% - при сдаче проекта\n\nПринимаем оплату картой, переводом на счет или через онлайн-банки.',
+            'связь|контакты|как связаться|поддержка': 'Вы можете связаться:\n\n• Через чат в заказе\n• Telegram: @sitecore_support\n• Email: support@sitecore.ru\n• Телефон: +7 (999) 123-45-67\n\nМы онлайн с 9:00 до 21:00',
+            'гарантии|что если не понравится|переделки|правки': 'Мы предоставляем:\n\n• 3 бесплатные правки дизайна\n• Тестовый период 14 дней\n• Гарантию на работу 1 год\n• Бесплатную поддержку 3 месяца\n• Возврат средств при невыполнении обязательств',
+            'команда|разработчики|кто делает|специалисты': 'Над вашими проектами работают:\n\n• Максим - Full-stack разработчик (5 лет опыта)\n• Александр - Frontend разработчик (3 года опыта)\n\nВсе разработчики имеют портфолио и сертификаты.',
+            'спасибо|благодарю|отлично|хорошо': 'Всегда рады помочь! Если есть еще вопросы - обращайтесь!',
+            'пока|до свидания|всего доброго|удачи': 'До свидания! Успехов в проекте!',
+            'помощь|что ты умеешь|возможности|функции': 'Я могу помочь с:\n\n• Консультацией по разработке сайтов\n• Объяснением стоимости и сроков\n• Подготовкой технического задания\n• Ответами на вопросы об оплате и гарантиях\n• Связью с разработчиками'
+        },
         
-        const orders = await window.db.getClientOrders(currentUser.id);
-        const container = document.getElementById('ordersGrid');
-        const noOrders = document.getElementById('noOrders');
-        const ordersCount = document.getElementById('ordersCount');
-        
-        if (!orders || orders.length === 0) {
-            container.innerHTML = '';
-            noOrders.style.display = 'block';
-            ordersCount.textContent = '0';
-            return;
-        }
-        
-        noOrders.style.display = 'none';
-        ordersCount.textContent = orders.length;
-        
-        // Сортируем по дате (новые сначала)
-        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
-        // Получаем разработчиков для отображения имен
-        const developers = await window.db.getDevelopers();
-        
-        container.innerHTML = orders.map(order => {
-            const statusText = {
-                'new': 'Новый',
-                'progress': 'В работе',
-                'review': 'На проверке',
-                'completed': 'Завершен',
-                'cancelled': 'Отменен'
-            };
+        findResponse(question) {
+            const lowerQuestion = question.toLowerCase();
             
-            const statusClass = {
-                'new': 'status-new',
-                'progress': 'status-in-progress',
-                'review': 'status-review',
-                'completed': 'status-completed',
-                'cancelled': 'status-new'
-            };
-            
-            // Получаем разработчика
-            let developerInfo = 'В поиске';
-            if (order.assignedTo) {
-                const developer = developers.find(d => d.id === order.assignedTo);
-                if (developer) {
-                    developerInfo = developer.name;
+            for (const [keywords, response] of Object.entries(this.responses)) {
+                const keywordList = keywords.split('|');
+                if (keywordList.some(keyword => lowerQuestion.includes(keyword))) {
+                    return response;
                 }
             }
             
-            return `
-                <div class="order-card" onclick="viewOrder('${order.id}')">
-                    <div class="order-header">
-                        <div>
-                            <div class="order-title">${order.projectName}</div>
-                            <div class="order-client">Создан: ${new Date(order.createdAt).toLocaleDateString()}</div>
-                        </div>
-                        <div class="order-status ${statusClass[order.status]}">
-                            ${statusText[order.status]}
-                        </div>
-                    </div>
-                    
-                    <div class="order-details">
-                        <div class="order-detail">
-                            <div class="detail-label">Тип</div>
-                            <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Бюджет</div>
-                            <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Срок</div>
-                            <div class="detail-value">${order.deadline} дней</div>
-                        </div>
-                        <div class="order-detail">
-                            <div class="detail-label">Разработчик</div>
-                            <div class="detail-value">${developerInfo}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="order-prompt">
-                        ${order.prompt.substring(0, 150)}...
-                    </div>
-                    
-                    <div class="order-actions">
-                        <button class="btn btn-primary" onclick="event.stopPropagation(); openChat('${order.id}')">
-                            <i class="fas fa-comment"></i> Чат
-                        </button>
-                        ${order.status === 'new' ? `
-                            <button class="btn btn-danger" onclick="event.stopPropagation(); cancelOrder('${order.id}')">
-                                <i class="fas fa-times"></i> Отменить
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }).join('');
+            return 'Извините, я не совсем понял вопрос. Можете переформулировать?\n\nВы можете спросить о стоимости, сроках, типах сайтов или процессе заказа.';
+        }
+    };
+    
+    // Проверка авторизации
+    function checkAuth() {
+        const userData = sessionStorage.getItem('sitecore_user');
+        if (!userData) {
+            window.location.href = 'index.html';
+            return;
+        }
         
+        currentUser = JSON.parse(userData);
+        
+        // Проверяем тип пользователя
+        if (currentUser.type !== 'client') {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        updateUserInfo();
+        loadOrders();
         updateStats();
+    }
+    
+    // Обновление информации пользователя
+    function updateUserInfo() {
+        document.getElementById('userAvatar').textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('profileAvatar').textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileEmail').textContent = currentUser.email;
         
-    } catch (error) {
-        console.error('Ошибка загрузки заказов:', error);
-        showNotification('Ошибка', 'Не удалось загрузить заказы. Проверьте интернет-соединение.', 'error');
-    }
-}
-
-// Создание заказа
-async function createOrderHandler(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('projectName').value;
-    const type = document.getElementById('projectType').value;
-    const budget = parseInt(document.getElementById('projectBudget').value);
-    const deadline = parseInt(document.getElementById('projectDeadline').value);
-    const prompt = document.getElementById('projectPrompt').value;
-    
-    // Проверка промта
-    if (prompt.length < 300) {
-        showNotification('Ошибка', 'Промт должен содержать минимум 300 символов', 'error');
-        return;
-    }
-    
-    if (prompt.length > 2500) {
-        showNotification('Ошибка', 'Промт должен содержать максимум 2500 символов', 'error');
-        return;
-    }
-    
-    try {
-        // Загружаем свежие данные
-        await window.db.load();
+        // Приветствие
+        const now = new Date();
+        const hours = now.getHours();
+        let greeting;
         
-        // Создаем заказ
-        const order = {
-            clientId: currentUser.id,
-            clientName: currentUser.name,
-            clientEmail: currentUser.email,
-            clientPhone: currentUser.phone,
-            clientTelegram: currentUser.telegram,
-            projectName: name,
-            projectType: type,
-            budget: budget,
-            deadline: deadline,
-            prompt: prompt
+        if (hours < 12) greeting = 'Доброе утро';
+        else if (hours < 18) greeting = 'Добрый день';
+        else greeting = 'Добрый вечер';
+        
+        document.getElementById('welcomeTitle').textContent = `${greeting}, ${currentUser.name}!`;
+        
+        // Контактная информация
+        document.getElementById('detailEmail').textContent = currentUser.email;
+        document.getElementById('detailPhone').textContent = currentUser.phone || 'Не указан';
+        document.getElementById('detailTelegram').textContent = currentUser.telegram || 'Не указан';
+        document.getElementById('detailCreatedAt').textContent = new Date().toLocaleDateString('ru-RU');
+    }
+    
+    // Показать раздел
+    function showSection(section) {
+        event.preventDefault();
+        currentSection = section;
+        
+        // Обновляем активные элементы навигации
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            const icon = item.querySelector('.nav-icon').className;
+            if (section === 'orders' && icon.includes('clipboard-list')) item.classList.add('active');
+            else if (section === 'create' && icon.includes('plus-circle')) item.classList.add('active');
+            else if (section === 'assistant' && icon.includes('robot')) item.classList.add('active');
+            else if (section === 'profile' && icon.includes('user')) item.classList.add('active');
+        });
+        
+        // Показываем нужный раздел
+        document.querySelectorAll('.content-section').forEach(sectionEl => {
+            sectionEl.classList.remove('active');
+        });
+        document.getElementById(section + '-section').classList.add('active');
+        
+        // Загружаем данные если нужно
+        if (section === 'orders') {
+            loadOrders();
+        } else if (section === 'profile') {
+            updateProfile();
+        } else if (section === 'create') {
+            setupForm();
+        }
+    }
+    
+    // Загрузка заказов
+    async function loadOrders() {
+        try {
+            const orders = window.db.getClientOrders(currentUser.id);
+            const container = document.getElementById('ordersGrid');
+            const noOrders = document.getElementById('noOrders');
+            const ordersCount = document.getElementById('ordersCount');
+            
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '';
+                noOrders.style.display = 'block';
+                ordersCount.textContent = '0';
+                return;
+            }
+            
+            noOrders.style.display = 'none';
+            ordersCount.textContent = orders.length;
+            
+            // Сортируем по дате (новые сначала)
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            container.innerHTML = orders.map(order => {
+                const statusText = {
+                    'new': 'Новый',
+                    'progress': 'В работе',
+                    'review': 'На проверке',
+                    'completed': 'Завершен',
+                    'cancelled': 'Отменен'
+                };
+                
+                const statusClass = {
+                    'new': 'status-new',
+                    'progress': 'status-in-progress',
+                    'review': 'status-review',
+                    'completed': 'status-completed',
+                    'cancelled': 'status-new'
+                };
+                
+                // Получаем разработчика
+                let developerInfo = 'В поиске';
+                if (order.assignedTo) {
+                    const developers = window.db.getDevelopers();
+                    const developer = developers.find(d => d.id === order.assignedTo);
+                    if (developer) {
+                        developerInfo = developer.name;
+                    }
+                }
+                
+                return `
+                    <div class="order-card" onclick="viewOrder('${order.id}')">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-title">${order.projectName}</div>
+                                <div class="order-client">Создан: ${new Date(order.createdAt).toLocaleDateString()}</div>
+                            </div>
+                            <div class="order-status ${statusClass[order.status]}">
+                                ${statusText[order.status]}
+                            </div>
+                        </div>
+                        
+                        <div class="order-details">
+                            <div class="order-detail">
+                                <div class="detail-label">Тип</div>
+                                <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                            </div>
+                            <div class="order-detail">
+                                <div class="detail-label">Бюджет</div>
+                                <div class="detail-value">${order.budget ? order.budget.toLocaleString() : '0'} ₽</div>
+                            </div>
+                            <div class="order-detail">
+                                <div class="detail-label">Срок</div>
+                                <div class="detail-value">${order.deadline || 'Не указан'} дней</div>
+                            </div>
+                            <div class="order-detail">
+                                <div class="detail-label">Разработчик</div>
+                                <div class="detail-value">${developerInfo}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="order-prompt">
+                            ${(order.prompt || '').substring(0, 150)}...
+                        </div>
+                        
+                        <div class="order-actions">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); openChat('${order.id}')">
+                                <i class="fas fa-comment"></i> Чат
+                            </button>
+                            ${order.status === 'new' ? `
+                                <button class="btn btn-danger" onclick="event.stopPropagation(); cancelOrder('${order.id}')">
+                                    <i class="fas fa-times"></i> Отменить
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            updateStats();
+            
+        } catch (error) {
+            console.error('Ошибка загрузки заказов:', error);
+            showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
+        }
+    }
+    
+    // Обновление статистики
+    function updateStats() {
+        const orders = window.db.getClientOrders(currentUser.id);
+        const totalOrders = orders.length;
+        const activeOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
+        const completedOrders = orders.filter(o => o.status === 'completed').length;
+        const totalBudget = orders.reduce((sum, order) => sum + (order.budget || 0), 0);
+        
+        // Обновляем бейдж
+        document.getElementById('statsBadge').innerHTML = `
+            <i class="fas fa-tasks"></i>
+            <span>${activeOrders} активных заказа</span>
+        `;
+        
+        // Обновляем статистику
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-value">${totalOrders}</div>
+                <div class="stat-label">Всего заказов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-value">${activeOrders}</div>
+                <div class="stat-label">В работе</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">${completedOrders}</div>
+                <div class="stat-label">Завершено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-ruble-sign"></i>
+                </div>
+                <div class="stat-value">${totalBudget.toLocaleString()} ₽</div>
+                <div class="stat-label">Общий бюджет</div>
+            </div>
+        `;
+        
+        // Обновляем профиль
+        document.getElementById('detailTotalOrders').textContent = totalOrders;
+        document.getElementById('detailActiveOrders').textContent = activeOrders;
+        document.getElementById('detailCompletedOrders').textContent = completedOrders;
+        document.getElementById('detailTotalBudget').textContent = totalBudget.toLocaleString() + ' ₽';
+    }
+    
+    // Настройка формы
+    function setupForm() {
+        const promptInput = document.getElementById('projectPrompt');
+        const counter = document.getElementById('charCounter');
+        
+        promptInput.addEventListener('input', function() {
+            const length = this.value.length;
+            let text = `${length} символов`;
+            
+            if (length < 300) {
+                text += ` (нужно еще ${300 - length})`;
+                counter.className = 'char-counter error';
+            } else if (length > 2500) {
+                text += ` (превышено на ${length - 2500})`;
+                counter.className = 'char-counter error';
+            } else {
+                counter.className = 'char-counter';
+            }
+            
+            counter.textContent = text;
+        });
+        
+        // Обработка формы
+        document.getElementById('createOrderForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('projectName').value;
+            const type = document.getElementById('projectType').value;
+            const budget = parseInt(document.getElementById('projectBudget').value) || 0;
+            const deadline = parseInt(document.getElementById('projectDeadline').value) || 30;
+            const prompt = document.getElementById('projectPrompt').value;
+            
+            // Проверка промта
+            if (prompt.length < 300) {
+                showNotification('Ошибка', 'Промт должен содержать минимум 300 символов', 'error');
+                return;
+            }
+            
+            if (prompt.length > 2500) {
+                showNotification('Ошибка', 'Промт должен содержать максимум 2500 символов', 'error');
+                return;
+            }
+            
+            try {
+                // Создаем заказ
+                const order = {
+                    clientId: currentUser.id,
+                    clientName: currentUser.name,
+                    clientEmail: currentUser.email,
+                    clientPhone: currentUser.phone,
+                    clientTelegram: currentUser.telegram,
+                    projectName: name,
+                    projectType: type,
+                    budget: budget,
+                    deadline: deadline,
+                    prompt: prompt
+                };
+                
+                const newOrder = await window.db.createOrder(order);
+                
+                if (newOrder) {
+                    // Добавляем системное сообщение
+                    await window.db.addMessage({
+                        orderId: newOrder.id,
+                        text: `Заказ "${name}" создан. Ожидайте, пока разработчик возьмет его в работу.`,
+                        sender: 'system',
+                        senderName: 'Система'
+                    });
+                    
+                    showNotification('Успех', 'Заказ успешно создан!', 'success');
+                    
+                    // Очищаем форму
+                    clearForm();
+                    
+                    // Переключаемся на заказы
+                    showSection('orders');
+                    
+                    // Перезагружаем заказы
+                    loadOrders();
+                } else {
+                    showNotification('Ошибка', 'Не удалось создать заказ', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка создания заказа:', error);
+                showNotification('Ошибка', 'Не удалось создать заказ: ' + error.message, 'error');
+            }
         };
-        
-        const newOrder = await window.db.createOrder(order);
-        
-        if (newOrder) {
-            // Добавляем системное сообщение
-            await window.db.addMessage({
-                orderId: newOrder.id,
-                text: `Заказ "${name}" создан. Ожидайте, пока разработчик возьмет его в работу.`,
-                sender: 'system',
-                senderName: 'Система'
-            });
-            
-            showNotification('Успех', 'Заказ успешно создан!', 'success');
-            
-            // Очищаем форму
-            clearForm();
-            
-            // Переключаемся на заказы
-            showSection('orders');
-            
-            // Перезагружаем заказы
-            loadOrders();
-        } else {
-            showNotification('Ошибка', 'Не удалось создать заказ', 'error');
-        }
-        
-    } catch (error) {
-        console.error('Ошибка создания заказа:', error);
-        showNotification('Ошибка', 'Не удалось создать заказ. Проверьте интернет-соединение.', 'error');
     }
-}
-
-// Отмена заказа
-async function cancelOrder(orderId) {
-    if (!confirm('Вы уверены, что хотите отменить этот заказ?')) return;
     
-    try {
-        // Загружаем свежие данные
-        await window.db.load();
-        
-        const success = await window.db.updateOrder(orderId, { status: 'cancelled' });
-        
-        if (success) {
-            // Добавляем системное сообщение
-            await window.db.addMessage({
-                orderId: orderId,
-                text: 'Заказ отменен клиентом.',
-                sender: 'system',
-                senderName: 'Система'
-            });
-            
-            showNotification('Успех', 'Заказ отменен', 'success');
-            loadOrders();
-        } else {
-            showNotification('Ошибка', 'Не удалось отменить заказ', 'error');
-        }
-    } catch (error) {
-        showNotification('Ошибка', 'Не удалось отменить заказ. Проверьте интернет-соединение.', 'error');
+    // Очистка формы
+    function clearForm() {
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectType').value = '';
+        document.getElementById('projectBudget').value = '';
+        document.getElementById('projectDeadline').value = '';
+        document.getElementById('projectPrompt').value = '';
+        document.getElementById('charCounter').textContent = 'Минимум 300 символов, максимум 2500';
+        document.getElementById('charCounter').className = 'char-counter';
     }
-}
-    </script>
+    
+    // Отмена заказа
+    async function cancelOrder(orderId) {
+        if (!confirm('Вы уверены, что хотите отменить этот заказ?')) return;
+        
+        try {
+            const success = await window.db.updateOrder(orderId, { status: 'cancelled' });
+            
+            if (success) {
+                // Добавляем системное сообщение
+                await window.db.addMessage({
+                    orderId: orderId,
+                    text: 'Заказ отменен клиентом.',
+                    sender: 'system',
+                    senderName: 'Система'
+                });
+                
+                showNotification('Успех', 'Заказ отменен', 'success');
+                loadOrders();
+            } else {
+                showNotification('Ошибка', 'Не удалось отменить заказ', 'error');
+            }
+        } catch (error) {
+            showNotification('Ошибка', 'Не удалось отменить заказ: ' + error.message, 'error');
+        }
+    }
+    
+    // Просмотр заказа
+    function viewOrder(orderId) {
+        alert('Детали заказа будут доступны в следующей версии');
+    }
+    
+    // Открыть чат
+    function openChat(orderId) {
+        alert('Чат с разработчиком будет доступен в следующей версии');
+    }
+    
+    // Обновление профиля
+    function updateProfile() {
+        updateStats();
+    }
+    
+    // Отправка сообщения помощнику
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const chatContainer = document.getElementById('chatMessages');
+        
+        // Добавляем сообщение пользователя
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user';
+        userMessage.innerHTML = `
+            <div class="message-sender">Вы</div>
+            ${message}
+            <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        `;
+        chatContainer.appendChild(userMessage);
+        
+        // Очищаем поле ввода
+        input.value = '';
+        
+        // Прокрутка вниз
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // Имитация ответа помощника
+        setTimeout(() => {
+            const response = assistantAI.findResponse(message);
+            
+            const assistantMessage = document.createElement('div');
+            assistantMessage.className = 'message assistant';
+            assistantMessage.innerHTML = `
+                <div class="message-sender">Помощник</div>
+                ${response.replace(/\n/g, '<br>')}
+                <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            `;
+            chatContainer.appendChild(assistantMessage);
+            
+            // Прокрутка вниз
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 1000);
+    }
+    
+    // Показать уведомление
+    function showNotification(title, message, type = 'info') {
+        const notification = document.getElementById('notification');
+        const titleEl = document.getElementById('notification-title');
+        const messageEl = document.getElementById('notification-message');
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+    
+    // Выход
+    function logout() {
+        sessionStorage.removeItem('sitecore_user');
+        window.location.href = 'index.html';
+    }
+    
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Ждем инициализации базы данных
+        if (!window.db) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        checkAuth();
+        setupForm();
+    });
+</script>
 </body>
 </html>
