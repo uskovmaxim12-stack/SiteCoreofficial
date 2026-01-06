@@ -2,12 +2,13 @@
 // Конфигурация базы данных через ваш Gist
 const DB_CONFIG = {
     GIST_ID: '30dbe17ad2208d9eb8809574ee8ef012',
-    API_URL: 'https://api.github.com/gists/30dbe17ad2208d9eb8809574ee8ef012',
-    TOKEN: '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'
+    GITHUB_TOKEN: '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',
+    API_URL: 'https://api.github.com/gists',
+    RAW_URL: 'https://gist.githubusercontent.com/uskovmaxim12-stack/30dbe17ad2208d9eb8809574ee8ef012/raw'
 };
 
 // База данных по умолчанию
-let sitecoreDB = {
+const DEFAULT_DB = {
     users: {
         clients: [],
         developers: [
@@ -36,17 +37,34 @@ let sitecoreDB = {
         ]
     },
     orders: [],
-    messages: []
+    messages: [],
+    lastSync: null
 };
 
-// Загрузка базы данных из Gist
+// Глобальная переменная для хранения базы данных
+let sitecoreDB = null;
+
+// Функция для показа ошибок
+function showDbError(message) {
+    console.error('Database Error:', message);
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = message;
+        notification.className = 'notification error show';
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+}
+
+// Загрузка базы данных из Gist с использованием токена
 async function loadDatabaseFromGist() {
     try {
         console.log('Загрузка данных из GitHub Gist...');
         
-        const response = await fetch(DB_CONFIG.API_URL, {
+        const response = await fetch(`${DB_CONFIG.API_URL}/${DB_CONFIG.GIST_ID}`, {
             headers: {
-                'Authorization': `token ${DB_CONFIG.TOKEN}`,
+                'Authorization': `Bearer ${DB_CONFIG.GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json'
             }
         });
@@ -55,41 +73,36 @@ async function loadDatabaseFromGist() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        const gistData = await response.json();
-        const content = gistData.files['gistfile1.txt'].content;
-        const data = JSON.parse(content);
+        const gist = await response.json();
+        const content = gist.files['sitecore_db.json']?.content || 
+                       gist.files['gistfile1.txt']?.content ||
+                       JSON.stringify(DEFAULT_DB);
         
-        if (data && data.users && data.users.developers) {
-            sitecoreDB = data;
-            console.log('Данные успешно загружены из Gist');
-            localStorage.setItem('sitecore_db_cache', JSON.stringify({
-                data: sitecoreDB,
-                timestamp: Date.now()
-            }));
-            return true;
-        } else {
-            throw new Error('Неверная структура данных в Gist');
-        }
+        const data = JSON.parse(content);
+        console.log('Данные успешно загружены из Gist');
+        return data;
     } catch (error) {
-        console.warn('Ошибка загрузки из Gist:', error.message);
-        return false;
+        console.error('Ошибка загрузки из Gist:', error.message);
+        throw error;
     }
 }
 
 // Сохранение базы данных в Gist
-async function saveDatabaseToGist() {
+async function saveDatabaseToGist(data) {
     try {
-        const response = await fetch(DB_CONFIG.API_URL, {
+        console.log('Сохранение данных в GitHub Gist...');
+        
+        const response = await fetch(`${DB_CONFIG.API_URL}/${DB_CONFIG.GIST_ID}`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `token ${DB_CONFIG.TOKEN}`,
+                'Authorization': `Bearer ${DB_CONFIG.GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 files: {
-                    'gistfile1.txt': {
-                        content: JSON.stringify(sitecoreDB, null, 2)
+                    'sitecore_db.json': {
+                        content: JSON.stringify(data, null, 2)
                     }
                 }
             })
@@ -102,103 +115,149 @@ async function saveDatabaseToGist() {
         console.log('Данные успешно сохранены в Gist');
         return true;
     } catch (error) {
-        console.error('Ошибка сохранения в Gist:', error);
-        return false;
+        console.error('Ошибка сохранения в Gist:', error.message);
+        throw error;
     }
 }
 
-// Загрузка данных (из кэша или Gist)
+// Загрузка базы данных (сначала из Gist, потом из localStorage, потом дефолтная)
 async function loadDatabase() {
-    // Сначала пробуем загрузить из Gist
-    const gistLoaded = await loadDatabaseFromGist();
-    
-    if (!gistLoaded) {
-        // Если не удалось из Gist, пробуем из localStorage
-        const cache = localStorage.getItem('sitecore_db_cache');
-        if (cache) {
-            try {
-                const cached = JSON.parse(cache);
-                sitecoreDB = cached.data;
+    try {
+        // Пытаемся загрузить из Gist
+        const gistData = await loadDatabaseFromGist();
+        sitecoreDB = gistData;
+        
+        // Сохраняем локальную копию
+        localStorage.setItem('sitecore_db', JSON.stringify(sitecoreDB));
+        localStorage.setItem('sitecore_db_sync', new Date().toISOString());
+        
+        console.log('Данные загружены из Gist');
+        return sitecoreDB;
+    } catch (error) {
+        console.warn('Не удалось загрузить из Gist, пробуем localStorage...');
+        
+        // Пробуем загрузить из localStorage
+        const localData = localStorage.getItem('sitecore_db');
+        const lastSync = localStorage.getItem('sitecore_db_sync');
+        
+        if (localData) {
+            sitecoreDB = JSON.parse(localData);
+            
+            // Проверяем, не устарели ли данные (больше 5 минут)
+            if (lastSync) {
+                const syncTime = new Date(lastSync);
+                const now = new Date();
+                const diffMinutes = (now - syncTime) / (1000 * 60);
+                
+                if (diffMinutes < 5) {
+                    console.log('Данные загружены из localStorage (синхронизированы)');
+                } else {
+                    console.log('Данные загружены из localStorage (требуется синхронизация)');
+                    showDbError('Данные могут быть устаревшими. Проверьте интернет-соединение.');
+                }
+            } else {
                 console.log('Данные загружены из localStorage');
-            } catch (e) {
-                console.warn('Ошибка загрузки из localStorage, используется база по умолчанию');
             }
+        } else {
+            // Используем базу по умолчанию
+            sitecoreDB = DEFAULT_DB;
+            localStorage.setItem('sitecore_db', JSON.stringify(DEFAULT_DB));
+            console.log('Используется база данных по умолчанию');
         }
+        
+        return sitecoreDB;
     }
-    
-    return sitecoreDB;
 }
 
-// Сохранение данных
-async function saveDatabase() {
-    // Сохраняем в localStorage
-    localStorage.setItem('sitecore_db_cache', JSON.stringify({
-        data: sitecoreDB,
-        timestamp: Date.now()
-    }));
+// Сохранение базы данных (пробуем в Gist, потом в localStorage)
+async function saveDatabase(data) {
+    // Обновляем глобальную переменную
+    sitecoreDB = data;
     
-    // Пытаемся сохранить в Gist
-    await saveDatabaseToGist().catch(error => {
-        console.warn('Не удалось сохранить в Gist, данные сохранены локально:', error.message);
-    });
+    // Всегда сохраняем в localStorage
+    localStorage.setItem('sitecore_db', JSON.stringify(data));
+    localStorage.setItem('sitecore_db_sync', new Date().toISOString());
+    
+    // Пытаемся сохранить в Gist (в фоновом режиме)
+    try {
+        await saveDatabaseToGist(data);
+        console.log('Данные синхронизированы с Gist');
+    } catch (error) {
+        console.warn('Не удалось сохранить в Gist, данные сохранены только локально');
+        // Не показываем ошибку пользователю, чтобы не мешать работе
+    }
     
     return true;
 }
 
-// Добавление нового пользователя (клиента)
-async function addUser(user) {
+// Инициализация базы данных при загрузке
+let isInitialized = false;
+async function initDatabase() {
+    if (!isInitialized) {
+        await loadDatabase();
+        isInitialized = true;
+    }
+    return sitecoreDB;
+}
+
+// Функции для работы с данными
+function addUser(user) {
+    if (!sitecoreDB) return false;
+    
     // Проверяем, нет ли уже пользователя с таким email
     const existingUser = sitecoreDB.users.clients.find(u => u.email === user.email);
     if (existingUser) {
-        throw new Error('Пользователь с таким email уже существует');
+        return false;
     }
     
-    // Добавляем ID и аватар
+    // Добавляем ID
     user.id = 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    user.avatar = user.name.charAt(0).toUpperCase();
     user.createdAt = new Date().toISOString();
+    user.avatar = user.name.charAt(0).toUpperCase();
     
     // Добавляем в базу
     sitecoreDB.users.clients.push(user);
-    
-    // Сохраняем
-    await saveDatabase();
-    return user;
+    saveDatabase(sitecoreDB);
+    return true;
 }
 
-// Проверка входа клиента
-async function checkClientLogin(email, password) {
+function checkClientLogin(email, password) {
+    if (!sitecoreDB) return null;
+    
     return sitecoreDB.users.clients.find(client => 
         client.email === email && client.password === password
     );
 }
 
-// Проверка входа разработчика
-async function checkDeveloperLogin(name, password) {
+function checkDeveloperLogin(name, password) {
+    if (!sitecoreDB) return null;
+    
     return sitecoreDB.users.developers.find(dev => 
         dev.name === name && dev.password === password
     );
 }
 
-// Получение всех заказов
 function getAllOrders() {
-    return sitecoreDB.orders || [];
+    return sitecoreDB ? sitecoreDB.orders : [];
 }
 
-// Получение заказов клиента
 function getClientOrders(clientId) {
-    return (sitecoreDB.orders || []).filter(order => order.clientId === clientId);
+    if (!sitecoreDB) return [];
+    
+    return sitecoreDB.orders.filter(order => order.clientId === clientId);
 }
 
-// Получение заказов разработчика
 function getDeveloperOrders(developerId) {
-    return (sitecoreDB.orders || []).filter(order => 
+    if (!sitecoreDB) return [];
+    
+    return sitecoreDB.orders.filter(order => 
         order.assignedTo === developerId || !order.assignedTo
     );
 }
 
-// Создание нового заказа
 async function createOrder(orderData) {
+    if (!sitecoreDB) return null;
+    
     const newOrder = {
         id: 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         ...orderData,
@@ -208,22 +267,16 @@ async function createOrder(orderData) {
         updatedAt: new Date().toISOString()
     };
     
-    if (!sitecoreDB.orders) {
-        sitecoreDB.orders = [];
-    }
-    
     sitecoreDB.orders.push(newOrder);
-    await saveDatabase();
+    await saveDatabase(sitecoreDB);
     return newOrder;
 }
 
-// Обновление заказа
 async function updateOrder(orderId, updates) {
-    const orderIndex = sitecoreDB.orders.findIndex(order => order.id === orderId);
+    if (!sitecoreDB) return false;
     
-    if (orderIndex === -1) {
-        throw new Error('Заказ не найден');
-    }
+    const orderIndex = sitecoreDB.orders.findIndex(order => order.id === orderId);
+    if (orderIndex === -1) return false;
     
     sitecoreDB.orders[orderIndex] = {
         ...sitecoreDB.orders[orderIndex],
@@ -231,12 +284,13 @@ async function updateOrder(orderId, updates) {
         updatedAt: new Date().toISOString()
     };
     
-    await saveDatabase();
-    return sitecoreDB.orders[orderIndex];
+    await saveDatabase(sitecoreDB);
+    return true;
 }
 
-// Добавление сообщения
 async function addMessage(messageData) {
+    if (!sitecoreDB) return null;
+    
     const newMessage = {
         id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         ...messageData,
@@ -248,32 +302,26 @@ async function addMessage(messageData) {
     }
     
     sitecoreDB.messages.push(newMessage);
-    await saveDatabase();
+    await saveDatabase(sitecoreDB);
     return newMessage;
 }
 
-// Получение сообщений заказа
 function getOrderMessages(orderId) {
-    return (sitecoreDB.messages || [])
+    if (!sitecoreDB || !sitecoreDB.messages) return [];
+    
+    return sitecoreDB.messages
         .filter(msg => msg.orderId === orderId)
         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 }
 
-// Получение разработчиков
 function getDevelopers() {
-    return sitecoreDB.users.developers;
+    return sitecoreDB ? sitecoreDB.users.developers : [];
 }
 
-// Инициализация
-async function initialize() {
-    await loadDatabase();
-    console.log('База данных SiteCore инициализирована');
-    return sitecoreDB;
-}
-
-// Экспортируем функции
+// Экспортируем функции для использования в других файлах
 window.db = {
-    initialize,
+    initDatabase,
+    loadDatabase,
     addUser,
     checkClientLogin,
     checkDeveloperLogin,
@@ -285,14 +333,12 @@ window.db = {
     addMessage,
     getOrderMessages,
     getDevelopers,
-    loadDatabase,
     saveDatabase
 };
 
-// Автоматическая инициализация при загрузке
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Инициализация...');
-    window.db.initialize().catch(error => {
-        console.error('Ошибка инициализации:', error);
-    });
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Инициализация базы данных SiteCore...');
+    await window.db.initDatabase();
+    console.log('База данных SiteCore готова к работе');
 });
