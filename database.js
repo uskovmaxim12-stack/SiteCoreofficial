@@ -1,363 +1,330 @@
-// database.js
-const GITHUB_TOKEN = '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';
-const GIST_ID = '30dbe17ad2208d9eb8809574ee8ef012';
-
-// База данных по умолчанию
-const DEFAULT_DB = {
-    users: {
-        clients: [],
-        developers: [
-            {
-                id: "dev_1",
-                name: "Максим",
-                password: "140612",
-                avatar: "М",
-                email: "maxim@sitecore.ru",
-                phone: "+7 (999) 123-45-67",
-                telegram: "@maxim_dev",
-                specialty: "Full-stack разработчик",
-                experience: "5 лет"
-            },
-            {
-                id: "dev_2",
-                name: "Александр", 
-                password: "789563",
-                avatar: "А",
-                email: "alexander@sitecore.ru",
-                phone: "+7 (999) 987-65-43",
-                telegram: "@alexander_dev",
-                specialty: "Frontend разработчик",
-                experience: "3 года"
-            }
-        ]
-    },
-    orders: [],
-    messages: []
+// database.js - Исправленная версия
+const DB_CONFIG = {
+    GIST_ID: '30dbe17ad2208d9eb8809574ee8ef012',
+    GIST_FILE: 'sitecore_db.json',
+    TOKEN: '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' // Ваш токен
 };
 
-class Database {
-    constructor() {
-        this.data = null;
-        this.loading = false;
-    }
+// Убираем старые URL, используем GitHub API напрямую
+const GIST_API_URL = `https://api.github.com/gists/${DB_CONFIG.GIST_ID}`;
 
-    // Загрузка данных из Gist
-    async load() {
-        console.log('Загрузка данных из GitHub Gist...');
+let sitecoreDB = null;
+
+// Проверяем структуру токена
+console.log('Токен GitHub:', DB_CONFIG.TOKEN ? 'Есть' : 'Нет');
+console.log('Первые 10 символов токена:', DB_CONFIG.TOKEN ? DB_CONFIG.TOKEN.substring(0, 10) + '...' : 'Нет');
+
+// Инициализация базы данных
+async function initializeDatabase() {
+    console.log('Инициализация базы данных...');
+    
+    try {
+        // Пытаемся загрузить из Gist
+        await loadFromGist();
+    } catch (error) {
+        console.error('Ошибка загрузки из Gist:', error);
         
-        try {
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const gist = await response.json();
-            const content = gist.files['sitecore_db.json']?.content;
-            
-            if (content) {
-                this.data = JSON.parse(content);
-                console.log('Данные успешно загружены из Gist:', this.data);
-            } else {
-                console.warn('Gist не содержит файл sitecore_db.json, используется база по умолчанию');
-                this.data = DEFAULT_DB;
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки из Gist:', error.message);
-            
-            // Пробуем загрузить из localStorage
-            const localData = localStorage.getItem('sitecore_db');
-            if (localData) {
-                this.data = JSON.parse(localData);
-                console.log('Данные загружены из localStorage');
-            } else {
-                this.data = DEFAULT_DB;
-                console.log('Используется база данных по умолчанию');
-            }
-        }
-
-        // Сохраняем локальную копию
-        localStorage.setItem('sitecore_db', JSON.stringify(this.data));
-        return this.data;
-    }
-
-    // Сохранение данных в Gist
-    async save() {
-        if (!this.data) {
-            console.error('Нет данных для сохранения');
-            return false;
-        }
-
-        console.log('Сохранение данных в GitHub Gist...');
-
-        try {
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    files: {
-                        'sitecore_db.json': {
-                            content: JSON.stringify(this.data, null, 2)
+        // Используем локальную базу
+        const localData = localStorage.getItem('sitecore_db');
+        if (localData) {
+            sitecoreDB = JSON.parse(localData);
+            console.log('Используем локальную копию из localStorage');
+        } else {
+            // Создаем базовую структуру
+            sitecoreDB = {
+                users: {
+                    clients: [],
+                    developers: [
+                        {
+                            id: "dev_1",
+                            name: "Максим",
+                            password: "140612",
+                            avatar: "М",
+                            email: "maxim@sitecore.ru",
+                            phone: "+7 (999) 123-45-67",
+                            telegram: "@maxim_dev",
+                            specialty: "Full-stack разработчик",
+                            experience: "5 лет",
+                            bio: "Специалист по созданию современных веб-приложений",
+                            skills: ["JavaScript", "React", "Node.js", "Python", "MongoDB"]
+                        },
+                        {
+                            id: "dev_2",
+                            name: "Александр", 
+                            password: "789563",
+                            avatar: "А",
+                            email: "alexander@sitecore.ru",
+                            phone: "+7 (999) 987-65-43",
+                            telegram: "@alexander_dev",
+                            specialty: "Frontend разработчик",
+                            experience: "3 года",
+                            bio: "Эксперт по созданию красивых и функциональных интерфейсов",
+                            skills: ["HTML/CSS", "JavaScript", "Vue.js", "UI/UX дизайн"]
                         }
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            console.log('Данные успешно сохранены в Gist');
+                    ]
+                },
+                orders: [],
+                messages: []
+            };
             
-            // Сохраняем локальную копию
-            localStorage.setItem('sitecore_db', JSON.stringify(this.data));
-            return true;
-        } catch (error) {
-            console.error('Ошибка сохранения в Gist:', error.message);
-            
-            // Сохраняем только локально
-            localStorage.setItem('sitecore_db', JSON.stringify(this.data));
-            return false;
-        }
-    }
-
-    // Добавление нового клиента
-    async addClient(clientData) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        // Проверяем, нет ли уже такого email
-        if (this.data.users.clients.some(client => client.email === clientData.email)) {
-            return { success: false, message: 'Пользователь с таким email уже существует' };
-        }
-
-        const newClient = {
-            id: 'client_' + Date.now(),
-            ...clientData,
-            createdAt: new Date().toISOString(),
-            avatar: clientData.name.charAt(0).toUpperCase()
-        };
-
-        this.data.users.clients.push(newClient);
-        await this.save();
-        
-        return { success: true, client: newClient };
-    }
-
-    // Проверка входа клиента
-    async checkClientLogin(email, password) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        return this.data.users.clients.find(client => 
-            client.email === email && client.password === password
-        );
-    }
-
-    // Проверка входа разработчика
-    async checkDeveloperLogin(name, password) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        return this.data.users.developers.find(dev => 
-            dev.name === name && dev.password === password
-        );
-    }
-
-    // Получение разработчиков
-    async getDevelopers() {
-        if (!this.data) {
-            await this.load();
-        }
-        return this.data.users.developers;
-    }
-
-    // Создание заказа
-    async createOrder(orderData) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        const newOrder = {
-            id: 'order_' + Date.now(),
-            ...orderData,
-            status: 'new',
-            assignedTo: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-
-        if (!this.data.orders) {
-            this.data.orders = [];
-        }
-
-        this.data.orders.push(newOrder);
-        await this.save();
-        
-        return newOrder;
-    }
-
-    // Получение заказов клиента
-    async getClientOrders(clientId) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        if (!this.data.orders) {
-            return [];
-        }
-
-        return this.data.orders.filter(order => order.clientId === clientId);
-    }
-
-    // Получение заказов для разработчика
-    async getDeveloperOrders(developerId) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        if (!this.data.orders) {
-            return [];
-        }
-
-        return this.data.orders.filter(order => 
-            !order.assignedTo || order.assignedTo === developerId
-        );
-    }
-
-    // Обновление заказа
-    async updateOrder(orderId, updates) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        if (!this.data.orders) {
-            return false;
-        }
-
-        const orderIndex = this.data.orders.findIndex(order => order.id === orderId);
-        if (orderIndex === -1) {
-            return false;
-        }
-
-        this.data.orders[orderIndex] = {
-            ...this.data.orders[orderIndex],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await this.save();
-        return true;
-    }
-
-    // Добавление сообщения
-    async addMessage(messageData) {
-        if (!this.data) {
-            await this.load();
-        }
-
-        if (!this.data.messages) {
-            this.data.messages = [];
-        }
-
-        const newMessage = {
-            id: 'msg_' + Date.now(),
-            ...messageData,
-            timestamp: new Date().toISOString()
-        };
-
-        this.data.messages.push(newMessage);
-        await this.save();
-        
-        return newMessage;
-    }
-
-    // Получение сообщений заказа
-    async getOrderMessages(orderId) {
-        if (!this.data || !this.data.messages) {
-            await this.load();
-        }
-
-        if (!this.data.messages) {
-            return [];
-        }
-
-        return this.data.messages
-            .filter(msg => msg.orderId === orderId)
-            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    }
-
-    // Инициализация Gist при первом запуске
-    async initializeGist() {
-        try {
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (response.status === 404) {
-                console.log('Gist не найден, создаем новый...');
-                // Здесь можно было бы создать новый Gist, но для этого нужен другой эндпоинт
-                return false;
-            }
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Ошибка инициализации Gist:', error);
-            return false;
+            console.log('Создана новая база данных');
+            saveToLocalStorage();
         }
     }
 }
 
-// Создаем и экспортируем экземпляр базы данных
-const database = new Database();
+// Загрузка из Gist
+async function loadFromGist() {
+    console.log('Загрузка данных из GitHub Gist...');
+    
+    const response = await fetch(GIST_API_URL, {
+        headers: {
+            'Authorization': `token ${DB_CONFIG.TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json'
+        }
+    });
+    
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Данные получены из Gist:', data);
+    
+    // Получаем содержимое файла
+    const fileContent = data.files[DB_CONFIG.GIST_FILE]?.content;
+    
+    if (!fileContent) {
+        throw new Error('Файл не найден в Gist');
+    }
+    
+    const parsedData = JSON.parse(fileContent);
+    
+    // Проверяем структуру данных
+    if (parsedData && parsedData.users && Array.isArray(parsedData.users.developers)) {
+        sitecoreDB = parsedData;
+        console.log('Данные успешно загружены из Gist');
+        saveToLocalStorage();
+    } else {
+        throw new Error('Неверная структура данных в Gist');
+    }
+}
 
-// Инициализируем при загрузке
-window.addEventListener('DOMContentLoaded', async () => {
-    await database.load();
+// Сохранение в Gist
+async function saveToGist() {
+    console.log('Сохранение данных в Gist...');
+    
+    try {
+        const response = await fetch(GIST_API_URL, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `token ${DB_CONFIG.TOKEN}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                files: {
+                    [DB_CONFIG.GIST_FILE]: {
+                        content: JSON.stringify(sitecoreDB, null, 2)
+                    }
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сохранения: HTTP ${response.status}`);
+        }
+        
+        console.log('Данные успешно сохранены в Gist');
+        return true;
+    } catch (error) {
+        console.error('Ошибка сохранения в Gist:', error);
+        return false;
+    }
+}
+
+// Сохранение в localStorage
+function saveToLocalStorage() {
+    if (sitecoreDB) {
+        localStorage.setItem('sitecore_db', JSON.stringify(sitecoreDB));
+        console.log('Данные сохранены в localStorage');
+    }
+}
+
+// Функции для работы с данными
+function getDevelopers() {
+    return sitecoreDB ? sitecoreDB.users.developers : [];
+}
+
+function getClients() {
+    return sitecoreDB ? sitecoreDB.users.clients : [];
+}
+
+function getOrders() {
+    return sitecoreDB ? sitecoreDB.orders : [];
+}
+
+function getMessages() {
+    return sitecoreDB ? sitecoreDB.messages : [];
+}
+
+// Регистрация клиента
+async function registerClient(clientData) {
+    if (!sitecoreDB) return false;
+    
+    // Проверяем email
+    const existingClient = sitecoreDB.users.clients.find(c => c.email === clientData.email);
+    if (existingClient) {
+        return false;
+    }
+    
+    // Создаем клиента
+    const newClient = {
+        id: 'client_' + Date.now(),
+        ...clientData,
+        avatar: clientData.name.charAt(0).toUpperCase(),
+        createdAt: new Date().toISOString()
+    };
+    
+    // Добавляем
+    sitecoreDB.users.clients.push(newClient);
+    
+    // Сохраняем
+    saveToLocalStorage();
+    await saveToGist();
+    
+    return newClient;
+}
+
+// Вход клиента
+function loginClient(email, password) {
+    if (!sitecoreDB) return null;
+    
+    return sitecoreDB.users.clients.find(client => 
+        client.email === email && client.password === password
+    );
+}
+
+// Вход разработчика
+function loginDeveloper(name, password) {
+    if (!sitecoreDB) return null;
+    
+    return sitecoreDB.users.developers.find(dev => 
+        dev.name === name && dev.password === password
+    );
+}
+
+// Создание заказа
+async function createOrder(orderData) {
+    if (!sitecoreDB) return null;
+    
+    const newOrder = {
+        id: 'order_' + Date.now(),
+        ...orderData,
+        status: 'new',
+        assignedTo: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    sitecoreDB.orders.push(newOrder);
+    
+    // Сохраняем
+    saveToLocalStorage();
+    await saveToGist();
+    
+    return newOrder;
+}
+
+// Обновление заказа
+async function updateOrder(orderId, updates) {
+    if (!sitecoreDB) return false;
+    
+    const orderIndex = sitecoreDB.orders.findIndex(order => order.id === orderId);
+    if (orderIndex === -1) return false;
+    
+    sitecoreDB.orders[orderIndex] = {
+        ...sitecoreDB.orders[orderIndex],
+        ...updates,
+        updatedAt: new Date().toISOString()
+    };
+    
+    saveToLocalStorage();
+    await saveToGist();
+    
+    return true;
+}
+
+// Получение заказов клиента
+function getClientOrders(clientId) {
+    if (!sitecoreDB) return [];
+    
+    return sitecoreDB.orders.filter(order => order.clientId === clientId);
+}
+
+// Получение заказов разработчика
+function getDeveloperOrders(developerId) {
+    if (!sitecoreDB) return [];
+    
+    // Доступные заказы (без назначенного разработчика или назначенные текущему)
+    return sitecoreDB.orders.filter(order => 
+        !order.assignedTo || order.assignedTo === developerId
+    );
+}
+
+// Добавление сообщения
+async function addMessage(messageData) {
+    if (!sitecoreDB) return null;
+    
+    const newMessage = {
+        id: 'msg_' + Date.now(),
+        ...messageData,
+        timestamp: new Date().toISOString()
+    };
+    
+    if (!sitecoreDB.messages) {
+        sitecoreDB.messages = [];
+    }
+    
+    sitecoreDB.messages.push(newMessage);
+    
+    saveToLocalStorage();
+    await saveToGist();
+    
+    return newMessage;
+}
+
+// Получение сообщений заказа
+function getOrderMessages(orderId) {
+    if (!sitecoreDB || !sitecoreDB.messages) return [];
+    
+    return sitecoreDB.messages
+        .filter(msg => msg.orderId === orderId)
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeDatabase();
     console.log('База данных SiteCore инициализирована');
 });
 
-// Экспортируем для использования в других файлах
+// Экспортируем функции
 window.db = {
-    // Основные методы
-    load: () => database.load(),
-    save: () => database.save(),
-    
-    // Пользователи
-    addClient: (clientData) => database.addClient(clientData),
-    checkClientLogin: (email, password) => database.checkClientLogin(email, password),
-    checkDeveloperLogin: (name, password) => database.checkDeveloperLogin(name, password),
-    getDevelopers: () => database.getDevelopers(),
-    
-    // Заказы
-    createOrder: (orderData) => database.createOrder(orderData),
-    getClientOrders: (clientId) => database.getClientOrders(clientId),
-    getDeveloperOrders: (developerId) => database.getDeveloperOrders(developerId),
-    updateOrder: (orderId, updates) => database.updateOrder(orderId, updates),
-    
-    // Сообщения
-    addMessage: (messageData) => database.addMessage(messageData),
-    getOrderMessages: (orderId) => database.getOrderMessages(orderId),
-    
-    // Вспомогательные методы
-    initializeGist: () => database.initializeGist()
+    initialize: initializeDatabase,
+    getDevelopers,
+    getClients,
+    getOrders,
+    getMessages,
+    registerClient,
+    loginClient,
+    loginDeveloper,
+    createOrder,
+    updateOrder,
+    getClientOrders,
+    getDeveloperOrders,
+    addMessage,
+    getOrderMessages,
+    saveToGist,
+    saveToLocalStorage
 };
