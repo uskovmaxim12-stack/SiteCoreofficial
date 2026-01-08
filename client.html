@@ -1424,109 +1424,118 @@
     }
     
     // Загрузка заказов
-    async function loadOrders() {
-        try {
-            const orders = window.db.getClientOrders(currentUser.id);
-            const container = document.getElementById('ordersGrid');
-            const noOrders = document.getElementById('noOrders');
-            const ordersCount = document.getElementById('ordersCount');
+    // В client.html
+async function loadOrders() {
+    try {
+        // Проверяем, что база данных инициализирована
+        if (!window.db) {
+            console.log('⏳ Ожидаем инициализации базы данных...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        const orders = await window.db.getClientOrders(currentUser.id);
+        const container = document.getElementById('ordersGrid');
+        const noOrders = document.getElementById('noOrders');
+        const ordersCount = document.getElementById('ordersCount');
+        
+        if (!orders || orders.length === 0) {
+            container.innerHTML = '';
+            noOrders.style.display = 'block';
+            ordersCount.textContent = '0';
+            return;
+        }
+        
+        noOrders.style.display = 'none';
+        ordersCount.textContent = orders.length;
+        
+        // Сортируем по дате (новые сначала)
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        container.innerHTML = orders.map(order => {
+            const statusText = {
+                'new': 'Новый',
+                'progress': 'В работе',
+                'review': 'На проверке',
+                'completed': 'Завершен',
+                'cancelled': 'Отменен'
+            };
             
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '';
-                noOrders.style.display = 'block';
-                ordersCount.textContent = '0';
-                return;
-            }
+            const statusClass = {
+                'new': 'status-new',
+                'progress': 'status-in-progress',
+                'review': 'status-review',
+                'completed': 'status-completed',
+                'cancelled': 'status-new'
+            };
             
-            noOrders.style.display = 'none';
-            ordersCount.textContent = orders.length;
-            
-            // Сортируем по дате (новые сначала)
-            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            container.innerHTML = orders.map(order => {
-                const statusText = {
-                    'new': 'Новый',
-                    'progress': 'В работе',
-                    'review': 'На проверке',
-                    'completed': 'Завершен',
-                    'cancelled': 'Отменен'
-                };
-                
-                const statusClass = {
-                    'new': 'status-new',
-                    'progress': 'status-in-progress',
-                    'review': 'status-review',
-                    'completed': 'status-completed',
-                    'cancelled': 'status-new'
-                };
-                
-                // Получаем разработчика
-                let developerInfo = 'В поиске';
-                if (order.assignedTo) {
-                    const developers = window.db.getDevelopers();
+            // Получаем разработчика
+            let developerInfo = 'В поиске';
+            if (order.assignedTo) {
+                // Получаем разработчиков и находим нужного
+                window.db.getDevelopers().then(developers => {
                     const developer = developers.find(d => d.id === order.assignedTo);
                     if (developer) {
-                        developerInfo = developer.name;
+                        return developer.name;
                     }
-                }
-                
-                return `
-                    <div class="order-card" onclick="viewOrder('${order.id}')">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-title">${order.projectName}</div>
-                                <div class="order-client">Создан: ${new Date(order.createdAt).toLocaleDateString()}</div>
-                            </div>
-                            <div class="order-status ${statusClass[order.status]}">
-                                ${statusText[order.status]}
-                            </div>
+                });
+            }
+            
+            return `
+                <div class="order-card" onclick="viewOrder('${order.id}')">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-title">${order.projectName}</div>
+                            <div class="order-client">Создан: ${new Date(order.createdAt).toLocaleDateString()}</div>
                         </div>
-                        
-                        <div class="order-details">
-                            <div class="order-detail">
-                                <div class="detail-label">Тип</div>
-                                <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Бюджет</div>
-                                <div class="detail-value">${order.budget ? order.budget.toLocaleString() : '0'} ₽</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Срок</div>
-                                <div class="detail-value">${order.deadline || 'Не указан'} дней</div>
-                            </div>
-                            <div class="order-detail">
-                                <div class="detail-label">Разработчик</div>
-                                <div class="detail-value">${developerInfo}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="order-prompt">
-                            ${(order.prompt || '').substring(0, 150)}...
-                        </div>
-                        
-                        <div class="order-actions">
-                            <button class="btn btn-primary" onclick="event.stopPropagation(); openChat('${order.id}')">
-                                <i class="fas fa-comment"></i> Чат
-                            </button>
-                            ${order.status === 'new' ? `
-                                <button class="btn btn-danger" onclick="event.stopPropagation(); cancelOrder('${order.id}')">
-                                    <i class="fas fa-times"></i> Отменить
-                                </button>
-                            ` : ''}
+                        <div class="order-status ${statusClass[order.status]}">
+                            ${statusText[order.status]}
                         </div>
                     </div>
-                `;
-            }).join('');
-            
-            updateStats();
-            
-        } catch (error) {
-            console.error('Ошибка загрузки заказов:', error);
-            showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
-        }
+                    
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <div class="detail-label">Тип</div>
+                            <div class="detail-value">${order.projectType === 'static' ? 'Статический' : 'Динамический'}</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">Бюджет</div>
+                            <div class="detail-value">${order.budget.toLocaleString()} ₽</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">Срок</div>
+                            <div class="detail-value">${order.deadline} дней</div>
+                        </div>
+                        <div class="order-detail">
+                            <div class="detail-label">Разработчик</div>
+                            <div class="detail-value">${developerInfo}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-prompt">
+                        ${order.prompt.substring(0, 150)}...
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); openChat('${order.id}')">
+                            <i class="fas fa-comment"></i> Чат
+                        </button>
+                        ${order.status === 'new' ? `
+                            <button class="btn btn-danger" onclick="event.stopPropagation(); cancelOrder('${order.id}')">
+                                <i class="fas fa-times"></i> Отменить
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        updateStats();
+        
+    } catch (error) {
+        console.error('Ошибка загрузки заказов:', error);
+        showNotification('Ошибка', 'Не удалось загрузить заказы', 'error');
     }
+}
     
     // Обновление статистики
     function updateStats() {
