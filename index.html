@@ -766,330 +766,276 @@
     </div>
 
     <script>
-    // JavaScript для index.html
-let currentForm = 'client';
-let selectedDeveloper = null;
+    let selectedDeveloper = null;
+    let isInitialized = false;
 
-// Показать нужную форму
-function showForm(formName, event) {
-    event.preventDefault();
-    currentForm = formName;
-    
-    // Обновляем табы
-    document.querySelectorAll('.tab-btn').forEach(tab => {
-        tab.classList.remove('active');
-        if ((formName === 'client' && tab.getAttribute('data-tab') === 'client-login') ||
-            (formName === 'register' && tab.getAttribute('data-tab') === 'client-register') ||
-            (formName === 'developer' && tab.getAttribute('data-tab') === 'developer-login')) {
-            tab.classList.add('active');
+    // Инициализация системы
+    async function initSystem() {
+        if (!isInitialized) {
+            try {
+                console.log('🚀 Инициализация системы SiteCore...');
+                await window.db.initDatabase();
+                console.log('✅ Система готова к работе');
+                isInitialized = true;
+            } catch (error) {
+                console.error('❌ Ошибка инициализации:', error);
+                showNotification('Ошибка', 'Не удалось инициализировать систему', 'error');
+            }
         }
-    });
-    
-    // Показываем нужную форму
-    document.querySelectorAll('.form').forEach(form => form.classList.remove('active'));
-    document.getElementById(formName === 'client' ? 'client-login' : 
-                          formName === 'register' ? 'client-register' : 'developer-login').classList.add('active');
-}
-
-// Переключение видимости пароля
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const icon = input.parentNode.querySelector('.password-toggle i');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
     }
-}
 
-// Загружаем аккаунты разработчиков
-async function loadDevelopers() {
-    try {
-        const developers = await window.db.getDevelopers();
-        const devAccounts = document.getElementById('developers-list');
+    // Показать уведомление
+    function showNotification(title, message, type = 'info') {
+        const notification = document.getElementById('notification');
+        const titleEl = document.getElementById('notification-title');
+        const messageEl = document.getElementById('notification-message');
         
-        if (!developers || developers.length === 0) {
-            devAccounts.innerHTML = '<p style="color: var(--gray-500); text-align: center; padding: 20px;">Разработчики не найдены</p>';
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+
+    // Переключение видимости пароля
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = input.parentNode.querySelector('.password-toggle i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Переключение вкладок
+    function setupTabs() {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const forms = document.querySelectorAll('.form');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                forms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === tabId) {
+                        form.classList.add('active');
+                    }
+                });
+                
+                if (tabId === 'developer-login') {
+                    loadDevelopers();
+                }
+            });
+        });
+    }
+
+    // Загрузка списка разработчиков
+    async function loadDevelopers() {
+        try {
+            await initSystem();
+            const developers = await window.db.getDevelopers();
+            const container = document.getElementById('developers-list');
+            
+            if (!developers || developers.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-500); text-align: center;">Нет доступных разработчиков</p>';
+                return;
+            }
+            
+            container.innerHTML = developers.map(dev => `
+                <div class="developer-card" onclick="selectDeveloper('${dev.name}', '${dev.password}')">
+                    <div class="developer-header">
+                        <div class="developer-avatar">${dev.avatar}</div>
+                        <div class="developer-info">
+                            <h4>${dev.name}</h4>
+                            <p>${dev.specialty} • ${dev.experience}</p>
+                            <span class="developer-specialty">${dev.specialty}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            console.error('Ошибка загрузки разработчиков:', error);
+            showNotification('Ошибка', 'Не удалось загрузить список разработчиков', 'error');
+        }
+    }
+
+    // Выбор разработчика
+    function selectDeveloper(name, password) {
+        selectedDeveloper = { name, password };
+        
+        document.querySelectorAll('.developer-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        event.currentTarget.classList.add('active');
+        
+        document.getElementById('developer-password').value = password;
+    }
+
+    // Вход клиента
+    async function loginClient(event) {
+        event.preventDefault();
+        
+        const email = document.querySelector('#client-login input[type="email"]').value;
+        const password = document.getElementById('client-password').value;
+        
+        try {
+            await initSystem();
+            const client = await window.db.checkClientLogin(email, password);
+            
+            if (client) {
+                sessionStorage.setItem('sitecore_user', JSON.stringify({
+                    type: 'client',
+                    id: client.id,
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                    telegram: client.telegram,
+                    avatar: client.avatar,
+                    createdAt: client.createdAt
+                }));
+                
+                showNotification('Успешный вход', `Добро пожаловать, ${client.name}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'client.html';
+                }, 1500);
+            } else {
+                showNotification('Ошибка входа', 'Неверный email или пароль', 'error');
+            }
+        } catch (error) {
+            console.error('Ошибка входа:', error);
+            showNotification('Ошибка', 'Не удалось выполнить вход', 'error');
+        }
+    }
+
+    // Регистрация клиента
+    async function registerClient(event) {
+        event.preventDefault();
+        
+        const name = document.querySelector('#client-register input[type="text"]').value;
+        const email = document.querySelector('#client-register input[type="email"]').value;
+        const phone = document.querySelector('#client-register input[type="tel"]').value;
+        const telegram = document.querySelector('#client-register input[placeholder="@username"]').value;
+        const password = document.getElementById('register-password').value;
+        const confirm = document.getElementById('register-confirm').value;
+        
+        if (password !== confirm) {
+            showNotification('Ошибка', 'Пароли не совпадают', 'error');
             return;
         }
         
-        devAccounts.innerHTML = developers.map(dev => `
-            <div class="developer-card" onclick="selectDeveloper('${dev.name}', '${dev.password}')">
-                <div class="developer-header">
-                    <div class="developer-avatar">${dev.avatar}</div>
-                    <div class="developer-info">
-                        <h4>${dev.name}</h4>
-                        <p>${dev.specialty} • ${dev.experience}</p>
-                        <span class="developer-specialty">${dev.specialty}</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Ошибка загрузки разработчиков:', error);
-        showNotification('Ошибка', 'Не удалось загрузить список разработчиков', 'error');
-    }
-}
-
-// Выбор разработчика
-function selectDeveloper(name, password) {
-    selectedDeveloper = { name, password };
-    
-    // Снимаем выделение со всех карточек
-    document.querySelectorAll('.developer-card').forEach(card => {
-        card.classList.remove('active');
-    });
-    
-    // Выделяем выбранную карточку
-    event.currentTarget.classList.add('active');
-    
-    // Автозаполняем поле пароля
-    document.getElementById('developer-password').value = password;
-}
-
-// Вход клиента
-async function loginClient(event) {
-    event.preventDefault();
-    
-    const email = document.querySelector('#client-login input[type="email"]').value.trim();
-    const password = document.getElementById('client-password').value;
-    const errorEl = document.querySelector('#client-login .error-message') || createErrorElement('client-login');
-    
-    if (!email || !password) {
-        showNotification('Ошибка', 'Заполните все поля', 'error');
-        return;
-    }
-    
-    try {
-        const client = await window.db.checkClientLogin(email, password);
-        
-        if (client) {
-            // Сохраняем данные клиента
-            sessionStorage.setItem('sitecore_user', JSON.stringify({
-                type: 'client',
-                id: client.id,
-                name: client.name,
-                email: client.email,
-                phone: client.phone,
-                telegram: client.telegram,
-                avatar: client.avatar,
-                createdAt: client.createdAt
-            }));
-            
-            showNotification('Успешный вход', `Добро пожаловать, ${client.name}!`, 'success');
-            
-            // Переход на страницу клиента
-            setTimeout(() => {
-                window.location.href = 'client.html';
-            }, 1500);
-        } else {
-            showNotification('Ошибка входа', 'Неверный email или пароль', 'error');
+        if (password.length < 6) {
+            showNotification('Ошибка', 'Пароль должен быть не менее 6 символов', 'error');
+            return;
         }
-    } catch (error) {
-        console.error('Ошибка входа:', error);
-        showNotification('Ошибка', 'Не удалось выполнить вход. Попробуйте снова.', 'error');
-    }
-}
-
-// Регистрация клиента
-async function registerClient(event) {
-    event.preventDefault();
-    
-    const name = document.querySelector('#client-register input[type="text"]').value.trim();
-    const email = document.querySelector('#client-register input[type="email"]').value.trim();
-    const phone = document.querySelector('#client-register input[type="tel"]').value.trim();
-    const telegram = document.querySelector('#client-register input[placeholder="@username"]').value.trim();
-    const password = document.getElementById('register-password').value;
-    const confirm = document.getElementById('register-confirm').value;
-    
-    // Проверка паролей
-    if (password !== confirm) {
-        showNotification('Ошибка', 'Пароли не совпадают', 'error');
-        return;
-    }
-    
-    if (password.length < 6) {
-        showNotification('Ошибка', 'Пароль должен быть не менее 6 символов', 'error');
-        return;
-    }
-    
-    if (!email.includes('@')) {
-        showNotification('Ошибка', 'Введите корректный email', 'error');
-        return;
-    }
-    
-    try {
-        // Создаем объект пользователя
-        const newUser = {
-            name: name,
-            email: email,
-            phone: phone,
-            telegram: telegram,
-            password: password
-        };
         
-        // Добавляем пользователя через нашу базу данных
-        const client = await window.db.addUser(newUser);
-        
-        if (client) {
-            // Автоматически входим
-            sessionStorage.setItem('sitecore_user', JSON.stringify({
-                type: 'client',
-                id: client.id,
-                name: client.name,
-                email: client.email,
-                phone: client.phone,
-                telegram: client.telegram,
-                avatar: client.avatar,
-                createdAt: client.createdAt
-            }));
+        try {
+            await initSystem();
             
-            showNotification('Успешная регистрация', 'Аккаунт создан! Перенаправляем...', 'success');
+            const newUser = {
+                name: name,
+                email: email,
+                phone: phone,
+                telegram: telegram,
+                password: password
+            };
             
-            setTimeout(() => {
-                window.location.href = 'client.html';
-            }, 1500);
-        } else {
-            showNotification('Ошибка', 'Пользователь с таким email уже существует', 'error');
-        }
-    } catch (error) {
-        console.error('Ошибка регистрации:', error);
-        showNotification('Ошибка', 'Не удалось зарегистрироваться: ' + error.message, 'error');
-    }
-}
-
-// Вход разработчика
-async function loginDeveloper(event) {
-    event.preventDefault();
-    
-    const password = document.getElementById('developer-password').value;
-    
-    if (!selectedDeveloper) {
-        showNotification('Ошибка', 'Выберите разработчика', 'error');
-        return;
-    }
-    
-    try {
-        // Ищем разработчика в базе
-        const developer = await window.db.checkDeveloperLogin(selectedDeveloper.name, password);
-        
-        if (developer) {
-            // Сохраняем данные разработчика
-            sessionStorage.setItem('sitecore_user', JSON.stringify({
-                type: 'developer',
-                id: developer.id,
-                name: developer.name,
-                email: developer.email,
-                phone: developer.phone,
-                telegram: developer.telegram,
-                avatar: developer.avatar,
-                specialty: developer.specialty,
-                experience: developer.experience
-            }));
+            const client = await window.db.addClient(newUser);
             
-            showNotification('Успешный вход', `Добро пожаловать, ${developer.name}!`, 'success');
-            
-            // Переход на страницу разработчика
-            setTimeout(() => {
-                window.location.href = 'developer.html';
-            }, 1500);
-        } else {
-            showNotification('Ошибка входа', 'Неверный пароль', 'error');
-        }
-    } catch (error) {
-        console.error('Ошибка входа разработчика:', error);
-        showNotification('Ошибка', 'Не удалось выполнить вход', 'error');
-    }
-}
-
-// Создание элемента ошибки
-function createErrorElement(formId) {
-    const form = document.getElementById(formId);
-    const errorEl = document.createElement('div');
-    errorEl.className = 'error-message';
-    form.appendChild(errorEl);
-    return errorEl;
-}
-
-// Показать уведомление
-function showNotification(title, message, type = 'info') {
-    const notification = document.getElementById('notification');
-    const titleEl = document.getElementById('notification-title');
-    const messageEl = document.getElementById('notification-message');
-    
-    titleEl.textContent = title;
-    messageEl.textContent = message;
-    
-    notification.className = `notification ${type}`;
-    notification.classList.add('show');
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 5000);
-}
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Инициализация системы SiteCore...');
-    
-    // Инициализируем базу данных
-    try {
-        await window.db.initDatabase();
-        console.log('✅ Система готова к работе');
-        
-        // Загружаем разработчиков
-        await loadDevelopers();
-        
-        // Автозаполнение для тестирования (можно удалить в продакшене)
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            setTimeout(() => {
-                // Автозаполняем форму входа клиента для тестирования
-                document.querySelector('#client-login input[type="email"]').value = 'test@example.com';
-                document.getElementById('client-password').value = '123456';
+            if (client) {
+                sessionStorage.setItem('sitecore_user', JSON.stringify({
+                    type: 'client',
+                    id: client.id,
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                    telegram: client.telegram,
+                    avatar: client.avatar,
+                    createdAt: client.createdAt
+                }));
                 
-                // Автоматически выбираем первого разработчика
-                const firstDev = document.querySelector('.developer-card');
-                if (firstDev) {
-                    firstDev.click();
-                }
-            }, 1000);
+                showNotification('Успешная регистрация', 'Аккаунт создан! Перенаправляем...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'client.html';
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Ошибка регистрации:', error);
+            showNotification('Ошибка', error.message, 'error');
+        }
+    }
+
+    // Вход разработчика
+    async function loginDeveloper(event) {
+        event.preventDefault();
+        
+        const password = document.getElementById('developer-password').value;
+        
+        if (!selectedDeveloper) {
+            showNotification('Ошибка', 'Выберите разработчика', 'error');
+            return;
         }
         
-    } catch (error) {
-        console.error('❌ Ошибка инициализации:', error);
-        showNotification('Внимание', 'Система работает в локальном режиме', 'warning');
+        if (password !== selectedDeveloper.password) {
+            showNotification('Ошибка входа', 'Неверный пароль', 'error');
+            return;
+        }
         
-        // Все равно пытаемся загрузить разработчиков
-        setTimeout(() => {
-            loadDevelopers();
-        }, 1000);
-    }
-});
-
-// Установка обработчиков событий для вкладок
-document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const tabId = this.getAttribute('data-tab');
+        try {
+            await initSystem();
+            const developer = await window.db.checkDeveloperLogin(selectedDeveloper.name, password);
             
-            if (tabId === 'client-login') {
-                showForm('client', e);
-            } else if (tabId === 'client-register') {
-                showForm('register', e);
-            } else if (tabId === 'developer-login') {
-                showForm('developer', e);
+            if (developer) {
+                sessionStorage.setItem('sitecore_user', JSON.stringify({
+                    type: 'developer',
+                    id: developer.id,
+                    name: developer.name,
+                    email: developer.email,
+                    phone: developer.phone,
+                    telegram: developer.telegram,
+                    avatar: developer.avatar,
+                    specialty: developer.specialty,
+                    experience: developer.experience
+                }));
+                
+                showNotification('Успешный вход', `Добро пожаловать, ${developer.name}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'developer.html';
+                }, 1500);
+            } else {
+                showNotification('Ошибка входа', 'Разработчик не найден', 'error');
             }
-        });
+        } catch (error) {
+            console.error('Ошибка входа разработчика:', error);
+            showNotification('Ошибка', 'Не удалось выполнить вход', 'error');
+        }
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', async () => {
+        await initSystem();
+        setupTabs();
+        loadDevelopers();
     });
-});
 </script>
+    
 </body>
 </html>
