@@ -1,4 +1,4 @@
-\// database.js - Обновленная версия с GitHub API и токеном
+// database.js - Обновленная версия с GitHub API и токеном
 const SITECORE_DB = {
     GIST_ID: '30dbe17ad2208d9eb8809574ee8ef012',
     GITHUB_TOKEN: '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',
