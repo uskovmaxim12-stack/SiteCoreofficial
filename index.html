@@ -3,262 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiteCore - Платформа разработки сайтов</title>
+    <title>SiteCore - Вход</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="database.js"></script>
     <style>
-        /* Сброс и базовые стили */
+        :root {
+            --primary: #4361ee;
+            --secondary: #7209b7;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Montserrat', 'Segoe UI', sans-serif;
-        }
-
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --primary-light: #4895ef;
-            --secondary: #7209b7;
-            --accent: #4cc9f0;
-            --success: #4ade80;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --gray-900: #0f172a;
-            --gray-800: #1e293b;
-            --gray-700: #334155;
-            --gray-600: #475569;
-            --gray-500: #64748b;
-            --gray-400: #94a3b8;
-            --gray-300: #cbd5e1;
-            --gray-200: #e2e8f0;
-            --gray-100: #f1f5f9;
-            --gray-50: #f8fafc;
-            --white: #ffffff;
-            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-            --gradient-secondary: linear-gradient(135deg, #4895ef 0%, #4cc9f0 100%);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
-            --shadow-2xl: 0 25px 50px -12px rgba(0,0,0,0.25);
-            --radius-sm: 0.5rem;
-            --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: var(--gray-100);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(67, 97, 238, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(114, 9, 183, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(76, 201, 240, 0.1) 0%, transparent 50%);
-            z-index: 0;
-        }
-
-        /* Контейнер */
-        .container {
-            max-width: 480px;
-            width: 100%;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            position: relative;
-            z-index: 1;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Шапка */
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-lg);
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .logo:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .logo-icon {
-            width: 3rem;
-            height: 3rem;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 30px;
+            text-align: center;
             color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
         }
 
         .logo-text {
-            font-size: 2rem;
+            font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .tagline {
-            font-size: 1.125rem;
-            color: var(--gray-400);
-            margin-bottom: 0.5rem;
-            font-weight: 500;
         }
 
         .subtitle {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            max-width: 300px;
-            margin: 0 auto;
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
         }
 
-        /* Вкладки */
-        .tabs-container {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-xl);
-        }
-
-        .tabs-header {
+        .tabs {
             display: flex;
-            background: rgba(30, 41, 59, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--light);
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .tab-btn {
+        .tab {
             flex: 1;
-            padding: 1.25rem;
-            background: transparent;
+            padding: 18px;
+            background: none;
             border: none;
-            color: var(--gray-400);
-            font-size: 1rem;
+            font-size: 16px;
             font-weight: 600;
+            color: var(--gray);
             cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
         }
 
-        .tab-btn:hover {
-            color: var(--gray-200);
-            background: rgba(255, 255, 255, 0.05);
+        .tab:hover {
+            background: #f1f5f9;
         }
 
-        .tab-btn.active {
-            color: white;
-            background: rgba(67, 97, 238, 0.2);
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
         }
 
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-primary);
-            border-radius: 3px 3px 0 0;
-        }
-
-        /* Формы */
         .form-container {
-            padding: 2.5rem;
+            padding: 30px;
         }
 
         .form {
             display: none;
-            animation: slideUp 0.5s ease-out;
+            animation: fadeIn 0.3s ease;
         }
 
         .form.active {
             display: block;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-title {
-            font-size: 1.5rem;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: white;
+            margin-bottom: 8px;
+            color: var(--dark);
         }
 
-        .form-description {
-            color: var(--gray-400);
-            margin-bottom: 2rem;
-            font-size: 0.875rem;
+        .form-subtitle {
+            color: var(--gray);
+            margin-bottom: 25px;
+            font-size: 14px;
         }
 
         .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
+            margin-bottom: 20px;
         }
 
         .input-label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--gray-300);
-            margin-bottom: 0.5rem;
+            color: var(--dark);
+            margin-bottom: 8px;
         }
 
         .input-wrapper {
@@ -267,340 +159,235 @@
 
         .input-field {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: rgba(30, 41, 59, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            color: white;
-            font-size: 1rem;
-            transition: var(--transition);
+            padding: 14px 14px 14px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--gray-500);
-            font-size: 1.125rem;
-            transition: var(--transition);
+            color: var(--gray);
+            font-size: 18px;
         }
 
-        .input-field:focus + .input-icon {
-            color: var(--primary);
-        }
-
-        .password-toggle {
+        .toggle-password {
             position: absolute;
-            right: 1rem;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--gray-500);
+            color: var(--gray);
             cursor: pointer;
-            font-size: 1.125rem;
-            transition: var(--transition);
+            font-size: 18px;
         }
 
-        .password-toggle:hover {
-            color: var(--gray-300);
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
         }
 
-        /* Разделитель */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 2rem 0;
-            color: var(--gray-500);
-            font-size: 0.875rem;
+        .error-message.show {
+            display: block;
         }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .divider span {
-            padding: 0 1rem;
-        }
-
-        /* Кнопки */
         .btn {
             width: 100%;
-            padding: 1rem;
+            padding: 16px;
             border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            gap: 10px;
         }
 
         .btn-primary {
-            background: var(--gradient-primary);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: white;
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid #e2e8f0;
+            margin-top: 15px;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
+            background: #f1f5f9;
         }
 
-        .btn-developer {
-            background: var(--gradient-secondary);
-            color: white;
-            box-shadow: 0 4px 15px rgba(72, 149, 239, 0.4);
+        .developers-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .btn-developer:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(72, 149, 239, 0.6);
+        .developers-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            text-align: center;
         }
 
-        /* Карточки разработчиков */
         .developers-grid {
             display: grid;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .developer-card {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            transition: var(--transition);
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .developer-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(67, 97, 238, 0.1), transparent);
-            opacity: 0;
-            transition: var(--transition);
+            transition: all 0.3s;
+            text-align: center;
         }
 
         .developer-card:hover {
+            border-color: var(--primary);
             transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .developer-card:hover::before {
-            opacity: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .developer-card.active {
             border-color: var(--primary);
-            background: rgba(67, 97, 238, 0.15);
-        }
-
-        .developer-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
         }
 
         .developer-avatar {
-            width: 3rem;
-            height: 3rem;
-            background: var(--gradient-primary);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.25rem;
             font-weight: bold;
-            flex-shrink: 0;
+            font-size: 18px;
         }
 
-        .developer-info h4 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: white;
-        }
-
-        .developer-info p {
-            font-size: 0.875rem;
-            color: var(--gray-400);
-        }
-
-        .developer-specialty {
-            display: inline-block;
-            background: rgba(72, 149, 239, 0.2);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
+        .developer-name {
             font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
         }
 
-        /* Уведомления */
+        .developer-role {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
         .notification {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
+            top: 20px;
+            right: 20px;
             background: var(--dark);
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-2xl);
-            border-left: 4px solid var(--primary);
-            display: flex;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
             align-items: center;
-            gap: 0.75rem;
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            gap: 10px;
             z-index: 1000;
             max-width: 350px;
+            animation: slideIn 0.3s ease;
         }
 
         .notification.show {
-            transform: translateX(0);
+            display: flex;
         }
 
         .notification.success {
-            border-left-color: var(--success);
+            background: var(--success);
         }
 
         .notification.error {
-            border-left-color: var(--danger);
+            background: var(--danger);
         }
 
-        .notification-icon {
-            font-size: 1.25rem;
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        .notification.success .notification-icon {
-            color: var(--success);
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .notification.error .notification-icon {
-            color: var(--danger);
-        }
-
-        /* Футер */
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: var(--gray-500);
-            font-size: 0.875rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 2rem;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 640px) {
-            .container {
-                margin: 1rem auto;
-                padding: 0 1rem;
-            }
-
-            .logo {
-                padding: 0.75rem 1rem;
-            }
-
-            .logo-text {
-                font-size: 1.75rem;
-            }
-
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            .tabs-header {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                padding: 1rem;
-            }
-
-            .notification {
-                top: 1rem;
-                right: 1rem;
-                left: 1rem;
-                max-width: none;
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 480px) {
-            .logo {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
+            .container {
+                border-radius: 15px;
             }
-
-            .developer-card {
-                padding: 1rem;
+            
+            .header {
+                padding: 20px;
             }
-
-            .developer-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.75rem;
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .developers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 15px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Основной контент -->
     <div class="container">
-        <!-- Шапка -->
         <div class="header">
             <div class="logo">
                 <div class="logo-icon">
@@ -608,434 +395,505 @@
                 </div>
                 <div class="logo-text">SiteCore</div>
             </div>
-            <p class="tagline">Платформа для создания сайтов</p>
-            <p class="subtitle">Разрабатываем статические и динамические сайты любой сложности</p>
+            <div class="subtitle">Платформа разработки сайтов</div>
         </div>
 
-        <!-- Вкладки -->
-        <div class="tabs-container">
-            <!-- Заголовки вкладок -->
-            <div class="tabs-header">
-                <button class="tab-btn active" data-tab="client-login">
-                    <i class="fas fa-user"></i> Клиент
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('client')">Клиент</button>
+            <button class="tab" onclick="showTab('register')">Регистрация</button>
+            <button class="tab" onclick="showTab('developer')">Разработчик</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Вход клиента -->
+            <form id="client-form" class="form active" onsubmit="return loginClient(event)">
+                <h3 class="form-title">Вход для клиентов</h3>
+                <p class="form-subtitle">Войдите в свой аккаунт</p>
+
+                <div class="input-group">
+                    <label class="input-label">Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" class="input-field" id="client-email" placeholder="ваш@email.com" required>
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Пароль</label>
+                    <div class="input-wrapper">
+                        <input type="password" class="input-field" id="client-password" placeholder="Ваш пароль" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="toggle-password" onclick="togglePassword('client-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="client-error"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="client-login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Войти
                 </button>
-                <button class="tab-btn" data-tab="client-register">
-                    <i class="fas fa-user-plus"></i> Регистрация
+
+                <button type="button" class="btn btn-secondary" onclick="showTab('register')">
+                    <i class="fas fa-user-plus"></i> Нет аккаунта? Зарегистрируйтесь
                 </button>
-                <button class="tab-btn" data-tab="developer-login">
-                    <i class="fas fa-code"></i> Разработчик
+            </form>
+
+            <!-- Регистрация клиента -->
+            <form id="register-form" class="form" onsubmit="return registerClient(event)">
+                <h3 class="form-title">Регистрация клиента</h3>
+                <p class="form-subtitle">Создайте новый аккаунт</p>
+
+                <div class="input-group">
+                    <label class="input-label">Имя и фамилия</label>
+                    <div class="input-wrapper">
+                        <input type="text" class="input-field" id="register-name" placeholder="Иван Иванов" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" class="input-field" id="register-email" placeholder="ваш@email.com" required>
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Телефон</label>
+                    <div class="input-wrapper">
+                        <input type="tel" class="input-field" id="register-phone" placeholder="+7 (999) 999-99-99" required>
+                        <i class="fas fa-phone input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Telegram</label>
+                    <div class="input-wrapper">
+                        <input type="text" class="input-field" id="register-telegram" placeholder="@username" required>
+                        <i class="fab fa-telegram input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Пароль</label>
+                    <div class="input-wrapper">
+                        <input type="password" class="input-field" id="register-password" placeholder="Минимум 6 символов" minlength="6" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="toggle-password" onclick="togglePassword('register-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Подтвердите пароль</label>
+                    <div class="input-wrapper">
+                        <input type="password" class="input-field" id="register-confirm" placeholder="Повторите пароль" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    <div class="error-message" id="register-error"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="register-btn">
+                    <i class="fas fa-user-plus"></i> Зарегистрироваться
                 </button>
-            </div>
 
-            <!-- Контент вкладок -->
-            <div class="form-container">
-                <!-- Вход клиента -->
-                <form id="client-login" class="form active" onsubmit="return loginClient(event)">
-                    <h2 class="form-title">Вход для клиентов</h2>
-                    <p class="form-description">Войдите в свой аккаунт для управления заказами</p>
+                <button type="button" class="btn btn-secondary" onclick="showTab('client')">
+                    <i class="fas fa-arrow-left"></i> Уже есть аккаунт? Войдите
+                </button>
+            </form>
 
-                    <div class="input-group">
-                        <label class="input-label">Email</label>
-                        <div class="input-wrapper">
-                            <input type="email" class="input-field" placeholder="ваш@email.com" required>
-                            <i class="fas fa-envelope input-icon"></i>
-                        </div>
-                    </div>
+            <!-- Вход разработчика -->
+            <form id="developer-form" class="form" onsubmit="return loginDeveloper(event)">
+                <h3 class="form-title">Вход для разработчиков</h3>
+                <p class="form-subtitle">Выберите разработчика и введите пароль</p>
 
-                    <div class="input-group">
-                        <label class="input-label">Пароль</label>
-                        <div class="input-wrapper">
-                            <input type="password" class="input-field" id="client-password" placeholder="Введите пароль" required>
-                            <i class="fas fa-lock input-icon"></i>
-                            <button type="button" class="password-toggle" onclick="togglePassword('client-password')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt"></i> Войти
-                    </button>
-                </form>
-
-                <!-- Регистрация клиента -->
-                <form id="client-register" class="form" onsubmit="return registerClient(event)">
-                    <h2 class="form-title">Регистрация клиента</h2>
-                    <p class="form-description">Создайте аккаунт для заказа сайтов</p>
-
-                    <div class="input-group">
-                        <label class="input-label">Имя и фамилия</label>
-                        <div class="input-wrapper">
-                            <input type="text" class="input-field" placeholder="Иван Иванов" required>
-                            <i class="fas fa-user input-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Email</label>
-                        <div class="input-wrapper">
-                            <input type="email" class="input-field" placeholder="ваш@email.com" required>
-                            <i class="fas fa-envelope input-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Телефон</label>
-                        <div class="input-wrapper">
-                            <input type="tel" class="input-field" placeholder="+7 (999) 999-99-99" required>
-                            <i class="fas fa-phone input-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Telegram</label>
-                        <div class="input-wrapper">
-                            <input type="text" class="input-field" placeholder="@username" required>
-                            <i class="fab fa-telegram input-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Пароль</label>
-                        <div class="input-wrapper">
-                            <input type="password" class="input-field" id="register-password" placeholder="Не менее 6 символов" minlength="6" required>
-                            <i class="fas fa-lock input-icon"></i>
-                            <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Подтвердите пароль</label>
-                        <div class="input-wrapper">
-                            <input type="password" class="input-field" id="register-confirm" placeholder="Повторите пароль" required>
-                            <i class="fas fa-lock input-icon"></i>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i> Зарегистрироваться
-                    </button>
-                </form>
-
-                <!-- Вход разработчика -->
-                <form id="developer-login" class="form" onsubmit="return loginDeveloper(event)">
-                    <h2 class="form-title">Вход для разработчиков</h2>
-                    <p class="form-description">Выберите разработчика и введите пароль</p>
-
-                    <!-- Список разработчиков -->
+                <div class="developers-section">
+                    <div class="developers-title">Выберите аккаунт:</div>
                     <div class="developers-grid" id="developers-list">
-                        <!-- Разработчики загрузятся через JavaScript -->
+                        <!-- Разработчики загрузятся через JS -->
                     </div>
+                </div>
 
-                    <div class="input-group">
-                        <label class="input-label">Пароль</label>
-                        <div class="input-wrapper">
-                            <input type="password" class="input-field" id="developer-password" placeholder="Введите пароль" required>
-                            <i class="fas fa-lock input-icon"></i>
-                            <button type="button" class="password-toggle" onclick="togglePassword('developer-password')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
+                <div class="input-group">
+                    <label class="input-label">Пароль</label>
+                    <div class="input-wrapper">
+                        <input type="password" class="input-field" id="developer-password" placeholder="Введите пароль" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="toggle-password" onclick="togglePassword('developer-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
+                    <div class="error-message" id="developer-error"></div>
+                </div>
 
-                    <button type="submit" class="btn btn-developer">
-                        <i class="fas fa-code"></i> Войти как разработчик
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Футер -->
-        <div class="footer">
-            <p>© 2026 SiteCore. Все права защищены.</p>
-            <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--gray-600);">
-                Платформа для команды разработки сайтов
-            </p>
+                <button type="submit" class="btn btn-primary" id="developer-login-btn">
+                    <i class="fas fa-code"></i> Войти как разработчик
+                </button>
+            </form>
         </div>
     </div>
 
     <!-- Уведомление -->
     <div class="notification" id="notification">
-        <i class="fas fa-info-circle notification-icon"></i>
+        <i class="fas fa-info-circle"></i>
         <div>
             <div id="notification-title"></div>
-            <div id="notification-message" style="font-size: 0.875rem; opacity: 0.9;"></div>
+            <div id="notification-message" style="font-size: 14px; opacity: 0.9;"></div>
         </div>
     </div>
 
     <script>
-    let selectedDeveloper = null;
-    let isInitialized = false;
+        // Переменные
+        let selectedDeveloper = null;
+        let isLoading = false;
 
-    // Инициализация системы
-    async function initSystem() {
-        if (!isInitialized) {
-            try {
-                console.log('🚀 Инициализация системы SiteCore...');
-                await window.db.initDatabase();
-                console.log('✅ Система готова к работе');
-                isInitialized = true;
-            } catch (error) {
-                console.error('❌ Ошибка инициализации:', error);
-                showNotification('Ошибка', 'Не удалось инициализировать систему', 'error');
+        // Показать уведомление
+        function showNotification(title, message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const titleEl = document.getElementById('notification-title');
+            const messageEl = document.getElementById('notification-message');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Показать ошибку в форме
+        function showError(formId, message) {
+            const errorEl = document.getElementById(`${formId}-error`);
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        // Скрыть ошибку в форме
+        function hideError(formId) {
+            const errorEl = document.getElementById(`${formId}-error`);
+            errorEl.classList.remove('show');
+        }
+
+        // Переключение видимости пароля
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentNode.querySelector('.toggle-password i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
-    }
 
-    // Показать уведомление
-    function showNotification(title, message, type = 'info') {
-        const notification = document.getElementById('notification');
-        const titleEl = document.getElementById('notification-title');
-        const messageEl = document.getElementById('notification-message');
-        
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-        
-        notification.className = `notification ${type}`;
-        notification.classList.add('show');
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 5000);
-    }
-
-    // Переключение видимости пароля
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const icon = input.parentNode.querySelector('.password-toggle i');
-        
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
-
-    // Переключение вкладок
-    function setupTabs() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const forms = document.querySelectorAll('.form');
-        
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.getAttribute('data-tab');
-                
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                forms.forEach(form => {
-                    form.classList.remove('active');
-                    if (form.id === tabId) {
-                        form.classList.add('active');
-                    }
-                });
-                
-                if (tabId === 'developer-login') {
-                    loadDevelopers();
+        // Показать вкладку
+        function showTab(tabName) {
+            // Обновляем активные вкладки
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if ((tabName === 'client' && tab.textContent === 'Клиент') ||
+                    (tabName === 'register' && tab.textContent === 'Регистрация') ||
+                    (tabName === 'developer' && tab.textContent === 'Разработчик')) {
+                    tab.classList.add('active');
                 }
             });
-        });
-    }
-
-    // Загрузка списка разработчиков
-    async function loadDevelopers() {
-        try {
-            await initSystem();
-            const developers = await window.db.getDevelopers();
-            const container = document.getElementById('developers-list');
             
-            if (!developers || developers.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-500); text-align: center;">Нет доступных разработчиков</p>';
+            // Показываем нужную форму
+            document.querySelectorAll('.form').forEach(form => {
+                form.classList.remove('active');
+                if (form.id === `${tabName}-form`) {
+                    form.classList.add('active');
+                }
+            });
+            
+            // Скрываем ошибки
+            hideError('client');
+            hideError('register');
+            hideError('developer');
+            
+            // Если это вкладка разработчика, загружаем список
+            if (tabName === 'developer') {
+                loadDevelopers();
+            }
+        }
+
+        // Загрузка разработчиков
+        async function loadDevelopers() {
+            try {
+                const developers = window.db.getDevelopers();
+                const container = document.getElementById('developers-list');
+                
+                if (!developers || developers.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--gray);">Нет доступных разработчиков</div>';
+                    return;
+                }
+                
+                container.innerHTML = developers.map(dev => `
+                    <div class="developer-card" onclick="selectDeveloper('${dev.name}', '${dev.password}')">
+                        <div class="developer-avatar">${dev.avatar}</div>
+                        <div class="developer-name">${dev.name}</div>
+                        <div class="developer-role">${dev.specialty}</div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки разработчиков:', error);
+                showNotification('Ошибка', 'Не удалось загрузить список разработчиков', 'error');
+            }
+        }
+
+        // Выбор разработчика
+        function selectDeveloper(name, password) {
+            selectedDeveloper = { name, password };
+            
+            // Снимаем выделение со всех карточек
+            document.querySelectorAll('.developer-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Выделяем выбранную карточку
+            event.currentTarget.classList.add('active');
+            
+            // Автозаполняем поле пароля
+            document.getElementById('developer-password').value = password;
+        }
+
+        // Вход клиента
+        async function loginClient(event) {
+            event.preventDefault();
+            
+            if (isLoading) return;
+            
+            const email = document.getElementById('client-email').value;
+            const password = document.getElementById('client-password').value;
+            
+            if (!email || !password) {
+                showError('client', 'Заполните все поля');
                 return;
             }
             
-            container.innerHTML = developers.map(dev => `
-                <div class="developer-card" onclick="selectDeveloper('${dev.name}', '${dev.password}')">
-                    <div class="developer-header">
-                        <div class="developer-avatar">${dev.avatar}</div>
-                        <div class="developer-info">
-                            <h4>${dev.name}</h4>
-                            <p>${dev.specialty} • ${dev.experience}</p>
-                            <span class="developer-specialty">${dev.specialty}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            hideError('client');
+            isLoading = true;
             
-        } catch (error) {
-            console.error('Ошибка загрузки разработчиков:', error);
-            showNotification('Ошибка', 'Не удалось загрузить список разработчиков', 'error');
-        }
-    }
-
-    // Выбор разработчика
-    function selectDeveloper(name, password) {
-        selectedDeveloper = { name, password };
-        
-        document.querySelectorAll('.developer-card').forEach(card => {
-            card.classList.remove('active');
-        });
-        
-        event.currentTarget.classList.add('active');
-        
-        document.getElementById('developer-password').value = password;
-    }
-
-    // Вход клиента
-    async function loginClient(event) {
-        event.preventDefault();
-        
-        const email = document.querySelector('#client-login input[type="email"]').value;
-        const password = document.getElementById('client-password').value;
-        
-        try {
-            await initSystem();
-            const client = await window.db.checkClientLogin(email, password);
+            // Показываем загрузку
+            const button = document.getElementById('client-login-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<div class="loading"></div>';
+            button.disabled = true;
             
-            if (client) {
-                sessionStorage.setItem('sitecore_user', JSON.stringify({
-                    type: 'client',
-                    id: client.id,
-                    name: client.name,
-                    email: client.email,
-                    phone: client.phone,
-                    telegram: client.telegram,
-                    avatar: client.avatar,
-                    createdAt: client.createdAt
-                }));
+            try {
+                // Инициализируем базу данных если нужно
+                if (!window.db.isReady()) {
+                    await window.db.initDatabase();
+                }
                 
-                showNotification('Успешный вход', `Добро пожаловать, ${client.name}!`, 'success');
+                // Вход клиента
+                const client = await window.db.loginClient(email, password);
                 
-                setTimeout(() => {
-                    window.location.href = 'client.html';
-                }, 1500);
-            } else {
-                showNotification('Ошибка входа', 'Неверный email или пароль', 'error');
+                if (client) {
+                    // Сохраняем в сессии
+                    sessionStorage.setItem('sitecore_user', JSON.stringify({
+                        type: 'client',
+                        id: client.id,
+                        name: client.name,
+                        email: client.email,
+                        phone: client.phone,
+                        telegram: client.telegram,
+                        avatar: client.avatar
+                    }));
+                    
+                    showNotification('Успешный вход', `Добро пожаловать, ${client.name}!`, 'success');
+                    
+                    // Переход через 1.5 секунды
+                    setTimeout(() => {
+                        window.location.href = 'client.html';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                showError('client', error.message);
+                showNotification('Ошибка входа', error.message, 'error');
+            } finally {
+                isLoading = false;
+                button.innerHTML = originalText;
+                button.disabled = false;
             }
-        } catch (error) {
-            console.error('Ошибка входа:', error);
-            showNotification('Ошибка', 'Не удалось выполнить вход', 'error');
         }
-    }
 
-    // Регистрация клиента
-    async function registerClient(event) {
-        event.preventDefault();
-        
-        const name = document.querySelector('#client-register input[type="text"]').value;
-        const email = document.querySelector('#client-register input[type="email"]').value;
-        const phone = document.querySelector('#client-register input[type="tel"]').value;
-        const telegram = document.querySelector('#client-register input[placeholder="@username"]').value;
-        const password = document.getElementById('register-password').value;
-        const confirm = document.getElementById('register-confirm').value;
-        
-        if (password !== confirm) {
-            showNotification('Ошибка', 'Пароли не совпадают', 'error');
-            return;
-        }
-        
-        if (password.length < 6) {
-            showNotification('Ошибка', 'Пароль должен быть не менее 6 символов', 'error');
-            return;
-        }
-        
-        try {
-            await initSystem();
+        // Регистрация клиента
+        async function registerClient(event) {
+            event.preventDefault();
             
-            const newUser = {
-                name: name,
-                email: email,
-                phone: phone,
-                telegram: telegram,
-                password: password
-            };
+            if (isLoading) return;
             
-            const client = await window.db.addClient(newUser);
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const telegram = document.getElementById('register-telegram').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
             
-            if (client) {
+            // Валидация
+            if (password !== confirm) {
+                showError('register', 'Пароли не совпадают');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('register', 'Пароль должен быть не менее 6 символов');
+                return;
+            }
+            
+            hideError('register');
+            isLoading = true;
+            
+            // Показываем загрузку
+            const button = document.getElementById('register-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<div class="loading"></div>';
+            button.disabled = true;
+            
+            try {
+                // Инициализируем базу данных если нужно
+                if (!window.db.isReady()) {
+                    await window.db.initDatabase();
+                }
+                
+                // Регистрация клиента
+                const clientData = {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    telegram: telegram,
+                    password: password
+                };
+                
+                const newClient = await window.db.registerClient(clientData);
+                
+                // Автоматический вход
                 sessionStorage.setItem('sitecore_user', JSON.stringify({
                     type: 'client',
-                    id: client.id,
-                    name: client.name,
-                    email: client.email,
-                    phone: client.phone,
-                    telegram: client.telegram,
-                    avatar: client.avatar,
-                    createdAt: client.createdAt
+                    id: newClient.id,
+                    name: newClient.name,
+                    email: newClient.email,
+                    phone: newClient.phone,
+                    telegram: newClient.telegram,
+                    avatar: newClient.avatar
                 }));
                 
                 showNotification('Успешная регистрация', 'Аккаунт создан! Перенаправляем...', 'success');
                 
+                // Переход через 1.5 секунды
                 setTimeout(() => {
                     window.location.href = 'client.html';
                 }, 1500);
+                
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                showError('register', error.message);
+                showNotification('Ошибка регистрации', error.message, 'error');
+            } finally {
+                isLoading = false;
+                button.innerHTML = originalText;
+                button.disabled = false;
             }
-        } catch (error) {
-            console.error('Ошибка регистрации:', error);
-            showNotification('Ошибка', error.message, 'error');
         }
-    }
 
-    // Вход разработчика
-    async function loginDeveloper(event) {
-        event.preventDefault();
-        
-        const password = document.getElementById('developer-password').value;
-        
-        if (!selectedDeveloper) {
-            showNotification('Ошибка', 'Выберите разработчика', 'error');
-            return;
-        }
-        
-        if (password !== selectedDeveloper.password) {
-            showNotification('Ошибка входа', 'Неверный пароль', 'error');
-            return;
-        }
-        
-        try {
-            await initSystem();
-            const developer = await window.db.checkDeveloperLogin(selectedDeveloper.name, password);
+        // Вход разработчика
+        async function loginDeveloper(event) {
+            event.preventDefault();
             
-            if (developer) {
-                sessionStorage.setItem('sitecore_user', JSON.stringify({
-                    type: 'developer',
-                    id: developer.id,
-                    name: developer.name,
-                    email: developer.email,
-                    phone: developer.phone,
-                    telegram: developer.telegram,
-                    avatar: developer.avatar,
-                    specialty: developer.specialty,
-                    experience: developer.experience
-                }));
-                
-                showNotification('Успешный вход', `Добро пожаловать, ${developer.name}!`, 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'developer.html';
-                }, 1500);
-            } else {
-                showNotification('Ошибка входа', 'Разработчик не найден', 'error');
+            if (isLoading) return;
+            
+            const password = document.getElementById('developer-password').value;
+            
+            if (!selectedDeveloper) {
+                showError('developer', 'Выберите разработчика');
+                return;
             }
-        } catch (error) {
-            console.error('Ошибка входа разработчика:', error);
-            showNotification('Ошибка', 'Не удалось выполнить вход', 'error');
+            
+            if (!password) {
+                showError('developer', 'Введите пароль');
+                return;
+            }
+            
+            hideError('developer');
+            isLoading = true;
+            
+            // Показываем загрузку
+            const button = document.getElementById('developer-login-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<div class="loading"></div>';
+            button.disabled = true;
+            
+            try {
+                // Инициализируем базу данных если нужно
+                if (!window.db.isReady()) {
+                    await window.db.initDatabase();
+                }
+                
+                // Вход разработчика
+                const developer = await window.db.loginDeveloper(selectedDeveloper.name, password);
+                
+                if (developer) {
+                    // Сохраняем в сессии
+                    sessionStorage.setItem('sitecore_user', JSON.stringify({
+                        type: 'developer',
+                        id: developer.id,
+                        name: developer.name,
+                        email: developer.email,
+                        phone: developer.phone,
+                        telegram: developer.telegram,
+                        avatar: developer.avatar,
+                        specialty: developer.specialty,
+                        experience: developer.experience
+                    }));
+                    
+                    showNotification('Успешный вход', `Добро пожаловать, ${developer.name}!`, 'success');
+                    
+                    // Переход через 1.5 секунды
+                    setTimeout(() => {
+                        window.location.href = 'developer.html';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                showError('developer', error.message);
+                showNotification('Ошибка входа', error.message, 'error');
+            } finally {
+                isLoading = false;
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
         }
-    }
 
-    // Инициализация
-    document.addEventListener('DOMContentLoaded', async () => {
-        await initSystem();
-        setupTabs();
-        loadDevelopers();
-    });
-</script>
-    
+        // Автоматическая загрузка при старте
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Загрузка системы SiteCore...');
+            
+            // Инициализируем базу данных
+            try {
+                await window.db.initDatabase();
+                console.log('✅ Система готова');
+                
+                // Загружаем разработчиков
+                loadDevelopers();
+                
+            } catch (error) {
+                console.error('❌ Ошибка инициализации:', error);
+                showNotification('Внимание', 'Работаем в локальном режиме. Некоторые функции могут быть ограничены.', 'error');
+            }
+        });
+    </script>
 </body>
 </html>
